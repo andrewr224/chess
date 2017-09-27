@@ -28,12 +28,12 @@ class Pawn < Piece
     "\u2659" if @color == :white
     "\u265F" if @color == :black
   end
-  # but it can move two squares on the first move
-  # and can attach diagonally
+
+  # it can attach diagonally
   def move(square)
     return false if (@position[0] != square[0])
-    return false if @color == :black && (@position[1] - square[1]) != 1
-    return false if @color == :white && (square[1]) - @position[1] != 1
+    return false if @color == :white && (square[1]) - @position[1] != 1 unless (@position[1] == 2) && (square[1] - @position[1]) == 2
+    return false if @color == :black && (@position[1] - square[1]) != 1 unless (@position[1] == 7) && (@position[1] - square[1]) == 2
     @position = square
     true
   end

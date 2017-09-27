@@ -27,19 +27,19 @@ RSpec.describe 'Pieces' do
   end
 
   describe 'Pawn' do
-    let(:black_pawn) { Pawn.new(:black, [3,7]) }
     let(:white_pawn) { Pawn.new(:white, [3,2]) }
+    let(:black_pawn) { Pawn.new(:black, [3,7]) }
 
     it 'has pawns' do
-      expect(black_pawn).to be_truthy
       expect(white_pawn).to be_truthy
+      expect(black_pawn).to be_truthy
     end
 
     it 'can move one square ahead' do
-      black_pawn.move([3,6])
       white_pawn.move([3,3])
-      expect(black_pawn.position).to eq([3,6])
+      black_pawn.move([3,6])
       expect(white_pawn.position).to eq([3,3])
+      expect(black_pawn.position).to eq([3,6])
     end
 
     it 'cannot move more than one square at a time' do
@@ -47,20 +47,25 @@ RSpec.describe 'Pieces' do
       expect(black_pawn.position).to_not eq([3,4])
     end
 
+    it 'can move two squares at a time from the initial square' do
+      white_pawn.move([3,4])
+      black_pawn.move([3,5])
+      expect(white_pawn.position).to eq([3,4])
+      expect(black_pawn.position).to eq([3,5])
+    end
+
     it 'cannot move to the left or rigth' do
-      black_pawn.move([2,6])
       white_pawn.move([4,2])
-      expect(black_pawn.position).to_not eq([2,6])
+      black_pawn.move([2,6])
       expect(white_pawn.position).to_not eq([4,2])
+      expect(black_pawn.position).to_not eq([2,6])
     end
 
     it 'cannot move back' do
-      black_pawn.move([3,8])
       white_pawn.move([3,1])
-      expect(black_pawn.position).to_not eq([3,8])
-      expect(black_pawn.position).to eq([3,7])
+      black_pawn.move([3,8])
       expect(white_pawn.position).to_not eq([3,1])
-      expect(white_pawn.position).to eq([3,2])
+      expect(black_pawn.position).to_not eq([3,8])
     end
   end
 
