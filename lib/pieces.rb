@@ -42,7 +42,8 @@ end
 
 class King < Piece
   def to_s
-    "\u2654"
+    "\u2654" if @color == :white
+    "\u265A" if @color == :black
   end
 
   # but it can castle
@@ -56,6 +57,10 @@ end
 
 class Pawn < Piece
 
+  def to_s
+    "\u2659" if @color == :white
+    "\u265F" if @color == :black
+  end
   # but it can move two squares on the first move
   # and can attach diagonally
   def move(square)
@@ -63,6 +68,15 @@ class Pawn < Piece
     return false if (@position[0] != square[0])
     return false if @color == :black && (@position[1] - square[1]) != 1
     return false if @color == :white && (square[1]) - @position[1] != 1
+    @position = square
+    true
+  end
+end
+
+class Rook < Piece
+  def move(square)
+    square = change_to_coordinates(square)
+    return false if (@position[0] != square[0]) && (@position[1] != square[1])
     @position = square
     true
   end
