@@ -1,11 +1,13 @@
 require 'board'
 require 'player'
+require 'pieces'
 
 class Chess
 
   def initialize
     @board = Board.new
-    @players = [Player.new, Player.new]
+    @players = [Player.new(:white), Player.new(:black)]
+
   end
 
   def board
@@ -14,5 +16,9 @@ class Chess
 
   def players
     @players
+  end
+
+  def pieces
+    @pieces
   end
 end
