@@ -64,3 +64,17 @@ class Bishop < Piece
     true
   end
 end
+
+
+class Knight < Piece
+  def to_s
+    "\u2658" if @color == :white
+    "\u265E" if @color == :black
+  end
+
+  def move(square)
+    return false unless ((@position[0] - square[0]).abs == 1 && (@position[1] - square[1]).abs == 2) || ((@position[0] - square[0]).abs == 2 && (@position[1] - square[1]).abs == 1)
+    @position = square
+    true
+  end
+end

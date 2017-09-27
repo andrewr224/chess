@@ -109,4 +109,22 @@ RSpec.describe 'Pieces' do
       expect(black_bishop.position).to_not eq([2,6])
     end
   end
+
+  describe 'Knight' do
+    let(:white_knight) { Knight.new(:white, [6,1]) }
+
+    it 'has a knight' do
+      expect(white_knight).to be_truthy
+    end
+
+    it 'jumps two squares up and one to the side' do
+      white_knight.move([7,3])
+      expect(white_knight.position).to eq([7,3])
+    end
+
+    it 'cannot jump to a square outside of it\'s reach' do
+      white_knight.move([2,3])
+      expect(white_knight.position).to_not eq([2,3])
+    end
+  end
 end
