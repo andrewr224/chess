@@ -87,4 +87,26 @@ RSpec.describe 'Pieces' do
       expect(black_rook.position).to_not eq([5,6])
     end
   end
+
+  describe 'Bishop' do
+    let(:white_bishop) { Bishop.new(:white, 'e4') }
+    let(:black_bishop) { Bishop.new(:black, 'd6') }
+
+    it 'has two bishops' do
+      expect(white_bishop).to be_truthy
+      expect(black_bishop).to be_truthy
+    end
+
+    it 'it can move diagonally' do
+      white_bishop.move('g2')
+      expect(white_bishop.position).to eq([7,2])
+    end
+
+    it 'cannot move horizontally or vertically' do
+      white_bishop.move('e6')
+      black_bishop.move('b6')
+      expect(white_bishop.position).to_not eq([5,6])
+      expect(black_bishop.position).to_not eq([2,6])
+    end
+  end
 end

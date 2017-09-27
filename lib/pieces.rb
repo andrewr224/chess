@@ -81,3 +81,13 @@ class Rook < Piece
     true
   end
 end
+
+class Bishop < Piece
+
+  def move(square)
+    square = change_to_coordinates(square)
+    return false if (@position[0] - square[0]).abs != (@position[1] - square[1]).abs
+    @position = square
+    true
+  end
+end
