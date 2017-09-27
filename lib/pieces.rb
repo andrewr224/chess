@@ -74,6 +74,11 @@ class Pawn < Piece
 end
 
 class Rook < Piece
+  def to_s
+    "\u2656" if @color == :white
+    "\u265C" if @color == :black
+  end
+
   def move(square)
     square = change_to_coordinates(square)
     return false if (@position[0] != square[0]) && (@position[1] != square[1])
@@ -83,6 +88,10 @@ class Rook < Piece
 end
 
 class Bishop < Piece
+  def to_s
+    "\u2657" if @color == :white
+    "\u265D" if @color == :black
+  end
 
   def move(square)
     square = change_to_coordinates(square)
