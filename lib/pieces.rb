@@ -78,3 +78,24 @@ class Knight < Piece
     true
   end
 end
+
+class Queen < Piece
+  def to_s
+    return "\u2655" if @color == :white
+    return "\u265B" if @color == :black
+  end
+
+  def move(square)
+    #diagonally
+    if (@position[0] - square[0]).abs == (@position[1] - square[1]).abs
+      @position = square
+      true
+    #horizontally and vertically
+    elsif (@position[0] == square[0]) || (@position[1] == square[1])
+      @position = square
+      true
+    else
+      false
+    end
+  end
+end

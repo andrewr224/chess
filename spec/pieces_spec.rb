@@ -132,4 +132,36 @@ RSpec.describe 'Pieces' do
       expect(white_knight.position).to_not eq([2,3])
     end
   end
+
+  describe 'Queen' do
+    let(:white_queen) { Queen.new(:white, [4,4]) }
+
+    it 'is a Queen' do
+      expect(white_queen).to be_instance_of Queen
+    end
+
+    it 'can be printed' do
+      expect(white_queen.to_s).to eq("\u2655")
+    end
+
+    it 'can move horizontally' do
+      white_queen.move([8,4])
+      expect(white_queen.position).to eq([8,4])
+    end
+
+    it 'can move vertically' do
+      white_queen.move([4,1])
+      expect(white_queen.position).to eq([4,1])
+    end
+
+    it 'can move diagonally' do
+      white_queen.move([1,7])
+      expect(white_queen.position).to eq([1,7])
+    end
+
+    it 'cannot move in but a straight line' do
+      white_queen.move([5,6])
+      expect(white_queen.position).to_not eq([5,6])
+    end
+  end
 end
