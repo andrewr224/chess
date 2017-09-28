@@ -4,11 +4,11 @@ RSpec.describe "Chess" do
   let(:game) { Chess.new }
   let(:board) { game.board }
   it "is a game" do
-    expect(game).to_not be_falsey
+    expect(game).to be_instance_of Chess
   end
 
   it "has a board" do
-    expect(game.board).to be_truthy
+    expect(game.board).to be_instance_of Board
   end
 
   it "has two players" do
