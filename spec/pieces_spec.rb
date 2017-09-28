@@ -6,7 +6,7 @@ RSpec.describe 'Pieces' do
     let(:white_king) { King.new(:white, [5,1]) }
 
     it 'has a King' do
-      expect(white_king).to be_truthy
+      expect(white_king).to be_instance_of King
     end
 
     it 'can move one square any direction' do
@@ -31,8 +31,7 @@ RSpec.describe 'Pieces' do
     let(:black_pawn) { Pawn.new(:black, [3,7]) }
 
     it 'has pawns' do
-      expect(white_pawn).to be_truthy
-      expect(black_pawn).to be_truthy
+      expect(white_pawn).to be_instance_of Pawn
     end
 
     it 'can move one square ahead' do
@@ -81,14 +80,16 @@ RSpec.describe 'Pieces' do
     let(:black_rook) { Rook.new(:black, [4,7]) }
 
     it 'has rooks' do
-      expect(black_rook).to be_truthy
-      expect(white_rook).to be_truthy
+      expect(black_rook).to be_instance_of Rook
     end
 
-    it 'can move any number of squares horizontally or vertically' do
+    it 'can move any number of squares horizontally' do
       white_rook.move([1,4])
-      black_rook.move([4,1])
       expect(white_rook.position).to eq([1,4])
+    end
+
+    it 'can move vertically' do
+      black_rook.move([4,1])
       expect(black_rook.position).to eq([4,1])
     end
 
@@ -105,8 +106,7 @@ RSpec.describe 'Pieces' do
     let(:black_bishop) { Bishop.new(:black, [4,6]) }
 
     it 'has two bishops' do
-      expect(white_bishop).to be_truthy
-      expect(black_bishop).to be_truthy
+      expect(white_bishop).to be_instance_of Bishop
     end
 
     it 'it can move diagonally' do
@@ -126,7 +126,7 @@ RSpec.describe 'Pieces' do
     let(:white_knight) { Knight.new(:white, [6,1]) }
 
     it 'has a knight' do
-      expect(white_knight).to be_truthy
+      expect(white_knight).to be_instance_of Knight
     end
 
     it 'jumps two squares up and one to the side' do
