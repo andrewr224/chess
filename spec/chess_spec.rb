@@ -20,9 +20,6 @@ RSpec.describe "Chess" do
       expect(board.squares.size).to eq(64)
     end
 
-    it "has 32 black squares" do
-      expect(board.squares.select{ |k,v| k.size == 3 }.size).to eq(32)
-    end
   end
 
 end
