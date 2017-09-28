@@ -4,22 +4,29 @@ class Player
     @color = color
   end
 
-  def select_a_square
+  def move
     input = gets.chomp
-    return false if input.length != 2
 
-    square = input.dup.split("")
+    squares = input.dup.split
+    return false if squares.length != 2
 
-    col = change_to_number(square[0].downcase)
-    num = square[1].to_i
+    from = change_to_coordinates(squares[0])
+    to = change_to_coordinates(squares[1])
 
-    return false unless col
-    return false unless (1..8).include? num
-
-    [col, num]
+    return false unless from && to
+    [from, to]
   end
 
-  def change_to_number(char)
+  def change_to_coordinates(square)
+    square = square.split("")
+    col = to_number(square[0].downcase)
+    row = square[1].to_i
+
+    return false unless col && ((1..8).include? row)
+    [col, row]
+  end
+
+  def to_number(char)
     col = case char
     when 'a'
       1

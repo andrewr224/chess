@@ -1,6 +1,6 @@
-a1
-B4
-n1
-d9
+a1 b3
+B4 C3
+n1 b2
+d9 b3
 da2
-d42
+d4 b2 c4 d1

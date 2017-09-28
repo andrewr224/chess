@@ -36,19 +36,19 @@ RSpec.describe "Chess" do
 
   describe 'Player' do
     $stdin = File.open("./spec/test.txt", "r")
-    it 'can select a square' do
-      expect(white.select_a_square).to eq([1,1])
-      expect(white.select_a_square).to eq([2,4])
+    it 'can move a piece' do
+      expect(white.move).to eq([[1,1], [2,3]])
+      expect(white.move).to eq([[2,4], [3,3]])
     end
 
     it 'cannot select a square that is not on the board' do
-      expect(white.select_a_square).to be_falsey
-      expect(white.select_a_square).to be_falsey
+      expect(white.move).to be_falsey
+      expect(white.move).to be_falsey
     end
 
     it 'cannot accept invalid input' do
-      expect(white.select_a_square).to be_falsey
-      expect(white.select_a_square).to be_falsey
+      expect(white.move).to be_falsey
+      expect(white.move).to be_falsey
     end
   end
 
