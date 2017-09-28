@@ -10,8 +10,8 @@ end
 
 class King < Piece
   def to_s
-    "\u2654" if @color == :white
-    "\u265A" if @color == :black
+    return "\u2654" if @color == :white
+    return "\u265A" if @color == :black
   end
 
   # but it can castle
@@ -25,8 +25,8 @@ end
 class Pawn < Piece
 
   def to_s
-    "\u2659" if @color == :white
-    "\u265F" if @color == :black
+    return "\u2659" if @color == :white
+    return "\u265F" if @color == :black
   end
 
   # it can attach diagonally
@@ -41,8 +41,8 @@ end
 
 class Rook < Piece
   def to_s
-    "\u2656" if @color == :white
-    "\u265C" if @color == :black
+    return "\u2656" if @color == :white
+    return "\u265C" if @color == :black
   end
 
   def move(square)
@@ -54,8 +54,8 @@ end
 
 class Bishop < Piece
   def to_s
-    "\u2657" if @color == :white
-    "\u265D" if @color == :black
+    return "\u2657" if @color == :white
+    return "\u265D" if @color == :black
   end
 
   def move(square)
@@ -68,8 +68,8 @@ end
 
 class Knight < Piece
   def to_s
-    "\u2658" if @color == :white
-    "\u265E" if @color == :black
+    return "\u2658" if @color == :white
+    return "\u265E" if @color == :black
   end
 
   def move(square)
