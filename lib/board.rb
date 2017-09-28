@@ -18,6 +18,7 @@ class Board
   end
 
   def show_board
+    puts
     @squares.each do |key,content|
       if key[0] == 1
         print "   --- --- --- --- --- --- --- --- \n"
