@@ -9,6 +9,14 @@ class Board
     @squares
   end
 
+  def add_piece(piece)
+    @squares[piece.position] = piece
+  end
+
+  def remove_piece(square)
+    @squares[square] = nil
+  end
+
   def show_board
     @squares.each do |key,content|
       if key[0] == 1
@@ -29,6 +37,3 @@ class Board
     puts "    A   B   C   D   E   F   G   H "
   end
 end
-
-
-Board.new.show_board

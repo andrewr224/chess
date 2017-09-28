@@ -20,6 +20,16 @@ RSpec.describe "Chess" do
       expect(board.squares.size).to eq(64)
     end
 
+    it 'can add a Piece to the Board' do
+      board.add_piece(Pawn.new(:white, [2,2]))
+      expect(board.squares[[2,2]]).to be_instance_of Pawn
+    end
+
+    it 'can remove a Piece from the Board' do
+      board.add_piece(Pawn.new(:white, [2,2]))
+      board.remove_piece([2,2])
+      expect(board.squares[[2,2]]).to be_nil
+    end
   end
 
 end
