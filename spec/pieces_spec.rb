@@ -67,6 +67,13 @@ RSpec.describe 'Pieces' do
       expect(white_pawn.position).to_not eq([3,1])
       expect(black_pawn.position).to_not eq([3,8])
     end
+
+    it 'can attack diagonally' do
+      white_pawn.move([2,3], :attack)
+      black_pawn.move([2,6], :attack)
+      expect(white_pawn.position).to eq([2,3])
+      expect(black_pawn.position).to eq([2,6])
+    end
   end
 
   describe 'Rook' do

@@ -29,8 +29,15 @@ class Pawn < Piece
     return "\u265F" if @color == :black
   end
 
-  # it can attach diagonally
-  def move(square)
+  def move(square, attack=false)
+    # attach is handled sepparatelly
+    if attack && ((@position[0] - square[0]).abs == 1) && ((@position[1] - square[1]).abs == 1)
+      @position = square
+      true
+    end
+
+    # cannot move to a different rank, or move back, or move more than
+    # 1 square at a time, exept when it's its innitial square
     return false if (@position[0] != square[0])
     return false if @color == :white && (square[1]) - @position[1] != 1 unless (@position[1] == 2) && (square[1] - @position[1]) == 2
     return false if @color == :black && (@position[1] - square[1]) != 1 unless (@position[1] == 7) && (@position[1] - square[1]) == 2
