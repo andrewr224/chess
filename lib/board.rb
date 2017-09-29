@@ -1,12 +1,10 @@
 require_relative 'squares'
 
 class Board
+  attr_reader :squares
+
   def initialize
     @squares = $layout.dup
-  end
-
-  def squares
-    @squares
   end
 
   def add_piece(piece, position)
@@ -41,18 +39,18 @@ class Board
 
   def show_board
     puts
-    @squares.each do |key,content|
-      if key[0] == 1
+    squares.each do |square,piece|
+      if square[0] == 1
         print "   --- --- --- --- --- --- --- --- \n"
-        print "#{key[1] } "
+        print "#{square[1] } "
       end
 
-      if ((key[0] % 2 == 0) && (key[1] % 2 == 0)) || ((key[0] % 2 != 0) && (key[1] % 2 != 0))
-        print content.nil? ? "|:::" : "|:#{content}:"
+      if ((square[0] % 2 == 0) && (square[1] % 2 == 0)) || ((square[0] % 2 != 0) && (square[1] % 2 != 0))
+        print piece.nil? ? "|:::" : "|:#{piece}:"
       else
-        print content.nil? ? "|   " : "| #{content} "
+        print piece.nil? ? "|   " : "| #{piece} "
       end
-      if key [0] == 8
+      if square [0] == 8
         print "|\n"
       end
     end
