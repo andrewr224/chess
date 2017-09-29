@@ -41,6 +41,32 @@ class Pawn < Piece
     return false if @color == :black && (@position[1] - square[1]) != 1 unless (@position[1] == 7) && (@position[1] - square[1]) == 2
     true
   end
+
+  def calculate_path(from, to, attack)
+    path = []
+    if attack && ((from[0] - to[0]).abs == 1) && ((from[1] - to[1]).abs == 1)
+      return path
+    end
+    return false if (from[0] != to[0])
+    return false if @color == :white && (to[1]) - from[1] != 1 unless (from[1] == 2) && (to[1] - from[1]) == 2
+    return false if @color == :black && (from[1] - to[1]) != 1 unless (from[1] == 7) && (from[1] - to[1]) == 2
+
+    if @color == :white
+        next_square = [from[0], from[1] + 1]
+        until next_square == to
+          path << next_square
+          next_square = [from[0], next_square[1] + 1]
+        end
+      else
+        next_square = [from[0], from[1] - 1]
+        until next_square == to
+          path << next_square
+          next_square = [from[0], next_square[1] - 1]
+        end
+      end
+
+    path
+  end
 end
 
 class Rook < Piece
