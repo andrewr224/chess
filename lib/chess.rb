@@ -1,6 +1,6 @@
-require 'board'
-require 'player'
-require 'pieces'
+require_relative 'board'
+require_relative 'player'
+require_relative 'pieces'
 
 class Chess
   attr_reader :board, :players
@@ -11,7 +11,8 @@ class Chess
   end
 
   def make_a_move
-    #@board.show_board
+    @board.show_board
+    puts "#{@players.first.color.capitalize}'s turn"
     squares = @players.first.select_squares
 
     # check if there is a piece to move
@@ -36,7 +37,7 @@ class Chess
         make_a_move
       elsif piece.instance_of?(Pawn) && (squares[0][0] == squares[1][0])
         puts "Illegal move."
-      make_a_move
+        make_a_move
       end
     end
 
@@ -49,5 +50,43 @@ class Chess
     end
 
     @players.reverse!
+  end
+
+  def place_pieces
+    @board.add_piece(Rook.new(:black), [1,8])
+    @board.add_piece(Knight.new(:black), [2,8])
+    @board.add_piece(Bishop.new(:black), [3,8])
+    @board.add_piece(Queen.new(:black), [4,8])
+    @board.add_piece(King.new(:black), [5,8])
+    @board.add_piece(Bishop.new(:black), [6,8])
+    @board.add_piece(Knight.new(:black), [7,8])
+    @board.add_piece(Rook.new(:black), [8,8])
+
+    @board.add_piece(Pawn.new(:black), [1,7])
+    @board.add_piece(Pawn.new(:black), [2,7])
+    @board.add_piece(Pawn.new(:black), [3,7])
+    @board.add_piece(Pawn.new(:black), [4,7])
+    @board.add_piece(Pawn.new(:black), [5,7])
+    @board.add_piece(Pawn.new(:black), [6,7])
+    @board.add_piece(Pawn.new(:black), [7,7])
+    @board.add_piece(Pawn.new(:black), [8,7])
+
+    @board.add_piece(Pawn.new(:white), [1,2])
+    @board.add_piece(Pawn.new(:white), [2,2])
+    @board.add_piece(Pawn.new(:white), [3,2])
+    @board.add_piece(Pawn.new(:white), [4,2])
+    @board.add_piece(Pawn.new(:white), [5,2])
+    @board.add_piece(Pawn.new(:white), [6,2])
+    @board.add_piece(Pawn.new(:white), [7,2])
+    @board.add_piece(Pawn.new(:white), [8,2])
+
+    @board.add_piece(Rook.new(:white), [1,1])
+    @board.add_piece(Knight.new(:white), [2,1])
+    @board.add_piece(Bishop.new(:white), [3,1])
+    @board.add_piece(Queen.new(:white), [4,1])
+    @board.add_piece(King.new(:white), [5,1])
+    @board.add_piece(Bishop.new(:white), [6,1])
+    @board.add_piece(Knight.new(:white), [7,1])
+    @board.add_piece(Rook.new(:white), [8,1])
   end
 end
