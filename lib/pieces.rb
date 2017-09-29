@@ -15,9 +15,8 @@ class King < Piece
   end
 
   # but it can castle
-  def move(square)
+  def validate_move(square)
     return false if ((@position[0] - square[0]).abs > 1) || ((@position[1] - square[1]).abs > 1)
-    @position = square
     true
   end
 end
@@ -29,11 +28,10 @@ class Pawn < Piece
     return "\u265F" if @color == :black
   end
 
-  def move(square, attack=false)
+  def validate_move(square, attack=false)
     # attach is handled sepparatelly
     if attack && ((@position[0] - square[0]).abs == 1) && ((@position[1] - square[1]).abs == 1)
-      @position = square
-      true
+      return true
     end
 
     # cannot move to a different rank, or move back, or move more than
@@ -41,7 +39,6 @@ class Pawn < Piece
     return false if (@position[0] != square[0])
     return false if @color == :white && (square[1]) - @position[1] != 1 unless (@position[1] == 2) && (square[1] - @position[1]) == 2
     return false if @color == :black && (@position[1] - square[1]) != 1 unless (@position[1] == 7) && (@position[1] - square[1]) == 2
-    @position = square
     true
   end
 end
@@ -52,9 +49,8 @@ class Rook < Piece
     return "\u265C" if @color == :black
   end
 
-  def move(square)
+  def validate_move(square)
     return false if (@position[0] != square[0]) && (@position[1] != square[1])
-    @position = square
     true
   end
 end
@@ -65,9 +61,8 @@ class Bishop < Piece
     return "\u265D" if @color == :black
   end
 
-  def move(square)
+  def validate_move(square)
     return false if (@position[0] - square[0]).abs != (@position[1] - square[1]).abs
-    @position = square
     true
   end
 end
@@ -79,9 +74,8 @@ class Knight < Piece
     return "\u265E" if @color == :black
   end
 
-  def move(square)
+  def validate_move(square)
     return false unless ((@position[0] - square[0]).abs == 1 && (@position[1] - square[1]).abs == 2) || ((@position[0] - square[0]).abs == 2 && (@position[1] - square[1]).abs == 1)
-    @position = square
     true
   end
 end
@@ -92,17 +86,38 @@ class Queen < Piece
     return "\u265B" if @color == :black
   end
 
-  def move(square)
+  def validate_move(square)
     #diagonally
     if (@position[0] - square[0]).abs == (@position[1] - square[1]).abs
-      @position = square
       true
     #horizontally and vertically
     elsif (@position[0] == square[0]) || (@position[1] == square[1])
-      @position = square
       true
     else
       false
     end
+  end
+
+  def calculate_path(from, to)
+    path = []
+
+    # horizontal move
+    if from[1] == to[1]
+      if from[0] > to[0]
+        next_square = [from[0] - 1, from[1]]
+        until next_square == to
+          path << next_square
+          next_square = [next_square[0] - 1, from[1]]
+        end
+      else
+        next_square = [from[0] + 1, from[1]]
+        until next_square == to
+          path << next_square
+          next_square = [next_square[0] + 1, from[1]]
+        end
+      end
+    end
+
+    path
   end
 end
