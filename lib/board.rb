@@ -9,8 +9,8 @@ class Board
     @squares
   end
 
-  def add_piece(piece)
-    @squares[piece.position] = piece
+  def add_piece(piece, position)
+    @squares[position] = piece
   end
 
   def remove_piece(square)
@@ -32,6 +32,7 @@ class Board
       path = piece.calculate_path(from, to)
     end
 
+    return false unless path
     path.each do |square|
       return false unless @squares[square].nil?
     end
