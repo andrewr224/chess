@@ -9,13 +9,13 @@ class Player
     input = gets.chomp
 
     squares = input.dup.split
-    return false if squares.length != 2
+    select_squares if squares.length != 2
 
     from = change_to_coordinates(squares[0])
     to = change_to_coordinates(squares[1])
 
-    return false unless from && to
-    return false if from == to
+    select_squares unless from && to
+    select_squares if from == to
     [from, to]
   end
 
