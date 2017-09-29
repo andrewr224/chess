@@ -1,10 +1,84 @@
 class Piece
-  attr_accessor :position
   attr_reader :color
 
-  def initialize(color, position)
+  def initialize(color)
     @color = color
-    @position = position
+  end
+
+  def horizontal_move(from, to)
+    path = []
+
+    if from[0] > to[0]
+      next_square = [from[0] - 1, from[1]]
+      until next_square == to
+        path << next_square
+        next_square = [next_square[0] - 1, from[1]]
+      end
+    else
+      next_square = [from[0] + 1, from[1]]
+      until next_square == to
+        path << next_square
+        next_square = [next_square[0] + 1, from[1]]
+      end
+    end
+
+    path
+  end
+
+  def vertical_move(from, to)
+    path = []
+
+    if from[1] > to[1]
+      next_square = [from[0], from[1] - 1]
+      until next_square == to
+        path << next_square
+        next_square = [from[0], next_square[1] - 1]
+      end
+    else
+      next_square = [from[0], from[1] + 1]
+      until next_square == to
+        path << next_square
+        next_square = [from[0], next_square[1] + 1]
+      end
+    end
+
+    path
+  end
+
+  def diagonal_move(from, to)
+    path = []
+
+    if from[0] > to[0]
+      if from[1] > to[1]
+        next_square = [from[0] - 1, from[1] - 1]
+        until next_square == to
+          path << next_square
+          next_square = [next_square[0] - 1, next_square[1] - 1]
+        end
+      else
+        next_square = [from[0] - 1, from[1] + 1]
+        until next_square == to
+          path << next_square
+          next_square = [next_square[0] - 1, next_square[1] + 1]
+        end
+      end
+    else
+      if from[1] > to[1]
+        next_square = [from[0] + 1, from[1] - 1]
+        until next_square == to
+          path << next_square
+          next_square = [next_square[0] + 1, next_square[1] - 1]
+        end
+      else
+        next_square = [from[0] + 1, from[1] + 1]
+        until next_square == to
+          path << next_square
+          next_square = [next_square[0] + 1, next_square[1] + 1]
+        end
+      end
+    end
+
+    path
   end
 end
 
@@ -15,57 +89,25 @@ class King < Piece
   end
 
   # but it can castle
-  def validate_move(square)
-    return false if ((@position[0] - square[0]).abs > 1) || ((@position[1] - square[1]).abs > 1)
-    true
+  def calculate_path(from, to)
+    return false if ((from[0] - to[0]).abs > 1) || ((from[1] - to[1]).abs > 1)
+    []
   end
 end
 
 class Pawn < Piece
-
   def to_s
     return "\u2659" if @color == :white
     return "\u265F" if @color == :black
   end
 
-  def validate_move(square, attack=false)
-    # attach is handled sepparatelly
-    if attack && ((@position[0] - square[0]).abs == 1) && ((@position[1] - square[1]).abs == 1)
-      return true
-    end
-
-    # cannot move to a different rank, or move back, or move more than
-    # 1 square at a time, exept when it's its innitial square
-    return false if (@position[0] != square[0])
-    return false if @color == :white && (square[1]) - @position[1] != 1 unless (@position[1] == 2) && (square[1] - @position[1]) == 2
-    return false if @color == :black && (@position[1] - square[1]) != 1 unless (@position[1] == 7) && (@position[1] - square[1]) == 2
-    true
-  end
-
   def calculate_path(from, to, attack)
-    path = []
-    if attack && ((from[0] - to[0]).abs == 1) && ((from[1] - to[1]).abs == 1)
-      return path
-    end
-    return false if (from[0] != to[0])
     return false if @color == :white && (to[1]) - from[1] != 1 unless (from[1] == 2) && (to[1] - from[1]) == 2
     return false if @color == :black && (from[1] - to[1]) != 1 unless (from[1] == 7) && (from[1] - to[1]) == 2
+    return [] if attack && ((from[0] - to[0]).abs == 1) && ((from[1] - to[1]).abs == 1)
+    return false if (from[0] != to[0])
 
-    if @color == :white
-        next_square = [from[0], from[1] + 1]
-        until next_square == to
-          path << next_square
-          next_square = [from[0], next_square[1] + 1]
-        end
-      else
-        next_square = [from[0], from[1] - 1]
-        until next_square == to
-          path << next_square
-          next_square = [from[0], next_square[1] - 1]
-        end
-      end
-
-    path
+    vertical_move(from, to)
   end
 end
 
@@ -76,8 +118,17 @@ class Rook < Piece
   end
 
   def validate_move(square)
-    return false if (@position[0] != square[0]) && (@position[1] != square[1])
     true
+  end
+
+  def calculate_path(from, to)
+    return false if (from[0] != to[0]) && (from[1] != to[1])
+
+    if from[0] == to[0]
+      vertical_move(from, to)
+    elsif from[1] == to[1]
+      horizontal_move(from, to)
+    end
   end
 end
 
@@ -87,9 +138,9 @@ class Bishop < Piece
     return "\u265D" if @color == :black
   end
 
-  def validate_move(square)
-    return false if (@position[0] - square[0]).abs != (@position[1] - square[1]).abs
-    true
+  def calculate_path(from, to)
+    return false if (from[0] - to[0]).abs != (from[1] - to[1]).abs
+    diagonal_move(from, to)
   end
 end
 
@@ -100,9 +151,9 @@ class Knight < Piece
     return "\u265E" if @color == :black
   end
 
-  def validate_move(square)
-    return false unless ((@position[0] - square[0]).abs == 1 && (@position[1] - square[1]).abs == 2) || ((@position[0] - square[0]).abs == 2 && (@position[1] - square[1]).abs == 1)
-    true
+  def calculate_path(from, to)
+    return false unless ((from[0] - to[0]).abs == 1 && (from[1] - to[1]).abs == 2) || ((from[0] - to[0]).abs == 2 && (from[1] - to[1]).abs == 1)
+    []
   end
 end
 
@@ -112,38 +163,15 @@ class Queen < Piece
     return "\u265B" if @color == :black
   end
 
-  def validate_move(square)
-    #diagonally
-    if (@position[0] - square[0]).abs == (@position[1] - square[1]).abs
-      true
-    #horizontally and vertically
-    elsif (@position[0] == square[0]) || (@position[1] == square[1])
-      true
+  def calculate_path(from, to)
+    if (from[0] - to[0]).abs == (from[1] - to[1]).abs
+      diagonal_move(from, to)
+    elsif (from[0] == to[0])
+      vertical_move(from, to)
+    elsif (from[1] == to[1])
+      horizontal_move(from, to)
     else
       false
     end
-  end
-
-  def calculate_path(from, to)
-    path = []
-
-    # horizontal move
-    if from[1] == to[1]
-      if from[0] > to[0]
-        next_square = [from[0] - 1, from[1]]
-        until next_square == to
-          path << next_square
-          next_square = [next_square[0] - 1, from[1]]
-        end
-      else
-        next_square = [from[0] + 1, from[1]]
-        until next_square == to
-          path << next_square
-          next_square = [next_square[0] + 1, from[1]]
-        end
-      end
-    end
-
-    path
   end
 end
