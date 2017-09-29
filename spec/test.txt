@@ -4,3 +4,5 @@ n1 b2
 d9 b3
 da2
 d4 b2 c4 d1
+c4 c4
+b2 b4

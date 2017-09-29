@@ -4,7 +4,7 @@ class Player
     @color = color
   end
 
-  def move
+  def select_squares
     input = gets.chomp
 
     squares = input.dup.split
@@ -14,6 +14,7 @@ class Player
     to = change_to_coordinates(squares[1])
 
     return false unless from && to
+    return false if from == to
     [from, to]
   end
 
