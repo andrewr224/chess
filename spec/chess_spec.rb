@@ -67,20 +67,6 @@ RSpec.describe "Chess" do
       expect(white.select_squares).to eq([[2,4], [3,3]])
     end
 
-    it 'cannot select a square that is not on the board' do
-      expect(white.select_squares).to be_falsey
-      expect(white.select_squares).to be_falsey
-    end
-
-    it 'cannot accept invalid input' do
-      # da2
-      expect(white.select_squares).to be_falsey
-      # d4 b2 c4 d1
-      expect(white.select_squares).to be_falsey
-      # c4 c4
-      expect(white.select_squares).to be_falsey
-    end
-
   end
 
   describe '#make_a_move' do
@@ -92,11 +78,6 @@ RSpec.describe "Chess" do
       expect(board.squares[[2,4]]).to be_instance_of Pawn
     end
 
-    # it works, but I want to ask user for another pair of squares,
-    # thus it cannot be tested
-    context 'when destination is occupied by a piece of the same color' do
-    end
-
     context 'when destination is occupied by a piece of opposite color' do
       it 'allows the capture' do
         board.add_piece(Queen.new(:white), [1,1])
@@ -105,6 +86,15 @@ RSpec.describe "Chess" do
         expect(board.squares[[1,1]]).to be_nil
         expect(board.squares[[8,1]]).to be_instance_of Queen
       end
+    end
+  end
+
+
+  # next to add: castling
+  describe 'Test game' do
+    let(:test_game) { Chess.new }
+    it 'allwos two players to play a game' do
+      expect(test_game.play).to raise_error
     end
   end
 

@@ -10,9 +10,18 @@ class Chess
     @players = [Player.new(:white), Player.new(:black)]
   end
 
+  def play
+    place_pieces
+    make_a_move until game_over
+  end
+
+  def game_over
+    false
+  end
+
   def make_a_move
     @board.show_board
-    puts "#{@players.first.color.capitalize}'s turn"
+    puts "#{@players.first.color.capitalize}'s turn: "
     squares = @players.first.select_squares
 
     # check if there is a piece to move
