@@ -138,7 +138,7 @@ RSpec.describe 'Pieces' do
       expect(white_queen.validate_move([1,7])).to be_truthy
     end
 
-    it 'cannot move in but a straight line' do
+    it 'cannot move but in a straight line' do
       expect(white_queen.validate_move([5,6])).to be_falsey
     end
   end
