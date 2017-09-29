@@ -3,23 +3,11 @@ require 'player'
 require 'pieces'
 
 class Chess
+  attr_reader :board, :players
 
   def initialize
     @board = Board.new
     @players = [Player.new(:white), Player.new(:black)]
-
-  end
-
-  def board
-    @board
-  end
-
-  def players
-    @players
-  end
-
-  def pieces
-    @pieces
   end
 
   def make_a_move
@@ -60,7 +48,6 @@ class Chess
       puts "#{@players.first.color.capitalize} captured #{@players.last.color.capitalize}'s #{target_piece.class}"
     end
 
-    # and we need to change players order
-
+    @players.reverse!
   end
 end
