@@ -17,6 +17,27 @@ class Board
     @squares[square] = nil
   end
 
+  def validate_presence(square)
+    return false if @squares[square].nil?
+    true
+  end
+
+  def validate_path(from, to)
+    piece = @squares[from]
+    path = []
+
+    if piece.instance_of? Pawn
+      path = piece.calculate_path(from, to, validate_presence(to))
+    else
+      path = piece.calculate_path(from, to)
+    end
+
+    path.each do |square|
+      return false unless @squares[square].nil?
+    end
+    true
+  end
+
   def show_board
     puts
     @squares.each do |key,content|
