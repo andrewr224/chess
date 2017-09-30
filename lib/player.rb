@@ -6,16 +6,28 @@ class Player
   end
 
   def select_squares
-    input = gets.chomp
+    puts "Your move: "
+    input = nil
+    from = nil
+    to = nil
 
-    squares = input.dup.split
-    select_squares if squares.length != 2
+    until from && to
+      input = gets.chomp
+      p "Input: #{input}"
+      squares = input.dup.split unless input.nil?
 
-    from = change_to_coordinates(squares[0])
-    to = change_to_coordinates(squares[1])
+      if input.empty?
+        puts "Invalid input. Your move: "
+      elsif (squares.length != 2) || (squares[0].length != 2) || (squares[1].length != 2)
+        puts "Invalid input 2. Your move: "
+      elsif squares[0] == squares[1]
+        puts "Invalid input 3. Your move: "
+      else
+        from = change_to_coordinates(squares[0])
+        to = change_to_coordinates(squares[1])
+      end
+    end
 
-    select_squares unless from && to
-    select_squares if from == to
     [from, to]
   end
 
