@@ -42,7 +42,7 @@ RSpec.describe "Chess" do
 
     describe '#validate_path' do
       context 'when the path is free' do
-        it 'it confirms that the path is free for a Queen' do
+        it 'it confirms that the path is free' do
           board.add_piece(Queen.new(:white), [1,1])
           board.add_piece(Queen.new(:black), [4,8])
           expect(board.validate_path([1,1],[8,1])).to be true
@@ -51,9 +51,9 @@ RSpec.describe "Chess" do
       end
 
       context 'when the path is not free' do
-        it 'it confirms that the path is not free for a Queen' do
-          board.add_piece(Queen.new(:white), [1,1])
-          board.add_piece(Queen.new(:black), [4,1])
+        it 'it confirms that the path is not free' do
+          board.add_piece(Rook.new(:white), [1,1])
+          board.add_piece(Knight.new(:black), [4,1])
           expect(board.validate_path([1,1],[8,1])).to be false
         end
       end
@@ -65,6 +65,13 @@ RSpec.describe "Chess" do
     it 'can select squares to move a piece' do
       expect(white.select_squares).to eq([[1,1], [2,3]])
       expect(white.select_squares).to eq([[2,4], [3,3]])
+    end
+
+    it 'cannot select invalid squares' do
+      # ""
+      # asd
+      # v1 w5
+      expect(white.select_squares).to eq([[5,2], [5,4]])
     end
 
   end
@@ -87,15 +94,52 @@ RSpec.describe "Chess" do
         expect(board.squares[[8,1]]).to be_instance_of Queen
       end
     end
+
+    context 'when destination is occupied by a piece of same color' do
+      it 'does not allow capture, but prompts user from new input' do
+        board.add_piece(Knight.new(:white), [3,1])
+        board.add_piece(Pawn.new(:white), [4,3])
+        # c1 d3 - fails
+        # c1 e2 - works
+        game.make_a_move
+        expect(board.squares[[3,1]]).to be_nil
+        expect(board.squares[[4,3]]).to be_instance_of Pawn
+        expect(board.squares[[5,2]]).to be_instance_of Knight
+      end
+    end
+
+    context 'when player selects a square with no piece' do
+      it 'gets another input from player' do
+        board.add_piece(Pawn.new(:white), [5,2])
+        # d2 d4
+        # e2 e4
+        game.make_a_move
+        expect(board.squares[[5,2]]).to be_nil
+        expect(board.squares[[5,4]]).to be_instance_of Pawn
+      end
+    end
+
+    context 'when player selects a piece that is not his/hers' do
+      it 'does not allow the move' do
+        board.add_piece(Knight.new(:black), [5,5])
+        board.add_piece(Pawn.new(:white), [4,3])
+        # e5 d3 - fails
+        # d3 d4 - works
+        game.make_a_move
+        expect(board.squares[[5,5]]).to be_instance_of Knight
+        expect(board.squares[[4,3]]).to be_nil
+        expect(board.squares[[4,4]]).to be_instance_of Pawn
+      end
+    end
   end
 
 
   # next to add: castling
   describe 'Test game' do
-    let(:test_game) { Chess.new }
-    it 'allwos two players to play a game' do
-      expect(test_game.play).to raise_error
-    end
+    #let(:test_game) { Chess.new }
+    #it 'allwos two players to play a game' do
+      #expect(test_game.play).to raise_error
+    #end
   end
 
 

@@ -1,7 +1,24 @@
 a1 b3
 B4 C3
+
+asd
+v1 w5
+
+e2 e4
 b2 b4
+a2 h1
 a1 h1
+
+c1 d3
+c1 e2
+
+d2 d4
+e2 e4
+
+e5 d3
+d3 d4
+
+# game
 d2 d4
 d7 d5
 g1 f3
