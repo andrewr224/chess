@@ -94,6 +94,25 @@ RSpec.describe "Chess" do
         expect(board.squares[[4,8]]).to be_instance_of Rook
       end
     end
+
+    describe '#check?' do
+      it 'sais that the king is not in check when he isn\'t' do
+        board.add_piece(King.new(:white), [5,8])
+        board.add_piece(Rook.new(:black), [2,7])
+        board.add_piece(Rook.new(:black), [6,1])
+        board.add_piece(Bishop.new(:black), [5,6])
+        expect(board.check?(white)).to be false
+      end
+
+      it 'sais that the king is in check when he is' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Rook.new(:black), [5,7])
+        board.add_piece(Rook.new(:black), [6,2])
+        board.add_piece(Bishop.new(:black), [3,3])
+        board.show_board
+        expect(board.check?(white)).to be true
+      end
+    end
   end
 
   describe 'Player' do
