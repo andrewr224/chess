@@ -12,7 +12,9 @@ class Board
   end
 
   def remove_piece(square)
+    piece = @squares[square]
     @squares[square] = nil
+    piece
   end
 
   def validate_presence(square)
@@ -35,6 +37,31 @@ class Board
       return false unless @squares[square].nil?
     end
     true
+  end
+
+  def castle(to)
+    case to
+    when [7,1]
+      king = remove_piece([5,1])
+      rook = remove_piece([8,1])
+      add_piece(king, [7,1])
+      add_piece(rook, [6,1])
+    when [7,8]
+      king = remove_piece([5,8])
+      rook = remove_piece([8,8])
+      add_piece(king, [7,8])
+      add_piece(rook, [6,8])
+    when [3,1]
+      king = remove_piece([5,1])
+      rook = remove_piece([1,1])
+      add_piece(king, [3,1])
+      add_piece(rook, [4,1])
+    when [3,8]
+      king = remove_piece([5,8])
+      rook = remove_piece([1,8])
+      add_piece(king, [3,8])
+      add_piece(rook, [4,8])
+    end
   end
 
   def show_board

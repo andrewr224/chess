@@ -58,6 +58,42 @@ RSpec.describe "Chess" do
         end
       end
     end
+
+    describe '#castling' do
+      it 'can castle kingside for white' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Rook.new(:white), [8,1])
+        board.castle([7,1])
+        expect(board.squares[[5,1]]).to be_nil
+        expect(board.squares[[8,1]]).to be_nil
+        expect(board.squares[[7,1]]).to be_instance_of King
+        expect(board.squares[[6,1]]).to be_instance_of Rook
+      end
+
+      it 'can castle kingside for black' do
+        board.add_piece(King.new(:black), [5,8])
+        board.add_piece(Rook.new(:black), [8,8])
+        board.castle([7,8])
+        expect(board.squares[[7,8]]).to be_instance_of King
+        expect(board.squares[[6,8]]).to be_instance_of Rook
+      end
+
+      it 'can castle queenside for white' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Rook.new(:white), [1,1])
+        board.castle([3,1])
+        expect(board.squares[[3,1]]).to be_instance_of King
+        expect(board.squares[[4,1]]).to be_instance_of Rook
+      end
+
+      it 'can castle queenside for black' do
+        board.add_piece(King.new(:black), [5,8])
+        board.add_piece(Rook.new(:black), [1,8])
+        board.castle([3,8])
+        expect(board.squares[[3,8]]).to be_instance_of King
+        expect(board.squares[[4,8]]).to be_instance_of Rook
+      end
+    end
   end
 
   describe 'Player' do

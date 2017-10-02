@@ -18,6 +18,8 @@ e2 e4
 e5 d3
 d3 d4
 
+#castling, don't use
+e1 g1
 # game
 d2 d4
 d7 d5
