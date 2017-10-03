@@ -3,7 +3,7 @@ require_relative 'player'
 require_relative 'pieces'
 
 class Chess
-  attr_reader :board, :players
+  attr_reader :board, :players, :white_king
 
   def initialize
     @board = Board.new
@@ -30,7 +30,6 @@ class Chess
 
     until from && to
       squares = @players.first.select_squares
-      puts "Selected squares are #{squares}"
       piece = @board.squares[squares[0]]
       target_piece = @board.squares[squares[1]]
 
@@ -58,10 +57,8 @@ class Chess
 
     move_pieces(from, to, piece, target_piece)
 
-    @board.show_board
     @players.reverse!
   end
-
 
   def move_pieces(from, to, piece, target_piece=nil)
     @board.remove_piece(from)
@@ -70,6 +67,111 @@ class Chess
     if target_piece
       puts "#{@players.first.color.capitalize} captured #{@players.last.color.capitalize}'s #{target_piece.class}"
     end
+  end
+
+  def check?(player)
+    oppressors(player, find_the_king(player)[1]).any?
+  end
+
+  def oppressors(player, target)
+    oppressors = @board.squares.select do |square, piece|
+      if !piece.nil? && piece.color != player.color
+        if piece.instance_of?(Pawn)
+          piece.calculate_path(square, target, true)
+        else
+          @board.validate_path(square, target)
+        end
+      end
+    end
+
+    oppressors
+  end
+
+  def can_evade?(player)
+    kings_square = find_the_king(player)[1]
+    king = find_the_king(player)[0]
+
+    moves = king.possible_moves(kings_square)
+    moves.select! do |move|
+      (@board.squares[move].nil? || @board.squares[move].color != king.color)
+    end
+
+    enemy_pieces = @board.squares.select do |square, piece|
+      !piece.nil? && piece.color != player.color
+    end
+
+    # so king cannot hide behind himself
+    @board.remove_piece(kings_square)
+
+    moves.select! do |move|
+      enemy_pieces.none? do |square, piece|
+        if square == move
+          false
+        elsif piece.instance_of?(Pawn)
+          piece.calculate_path(square, move, true)
+        else
+          @board.validate_path(square, move)
+        end
+      end
+    end
+
+    @board.add_piece(king, kings_square)
+
+    moves.any?
+  end
+
+  def can_block?(player, oppressor)
+    attack_line = oppressor.values[0].calculate_path(oppressor.keys.flatten, find_the_king(player)[1])
+
+    pieces = @board.squares.select do |square, piece|
+      !piece.nil? && !piece.instance_of?(King) && piece.color == player.color
+    end
+
+    attack_line.each do |line|
+      pieces.each do |square, piece|
+        # checking if it will be a check when the piece is moved
+        if @board.validate_path(square, line)
+          board.remove_piece(square)
+          board.add_piece(piece, line)
+          saved = check?(player)
+          board.remove_piece(line)
+          board.add_piece(piece, square)
+          return true unless saved
+        end
+      end
+    end
+
+    false
+  end
+
+  def can_capture?(player, oppressor)
+    pieces = @board.squares.select do |square, piece|
+      !piece.nil? && !piece.instance_of?(King) && piece.color == player.color
+    end
+
+    oppressor = oppressor.keys.flatten
+
+    pieces.each do |square, piece|
+      return true if @board.validate_path(square, oppressor)
+    end
+
+  end
+
+  def mate?(player)
+    oppressors = oppressors(player, find_the_king(player)[1])
+    if oppressors.size > 1
+      !can_evade?(player)
+    else
+      !(can_evade?(player) || can_capture?(player, oppressors) || can_block?(player, oppressors))
+    end
+  end
+
+  def find_the_king(player)
+    king = @board.squares.select do |square, piece|
+      !piece.nil? && piece.instance_of?(King) && piece.color == player.color
+    end
+
+    [king.values[0], king.keys.flatten]
   end
 
   def place_pieces
@@ -115,3 +217,6 @@ class Chess
 end
 
 #Chess.new.play
+#g = Chess.new
+#g.place_pieces
+#g.board.check?(g.white_king)

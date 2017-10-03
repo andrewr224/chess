@@ -64,22 +64,6 @@ class Board
     end
   end
 
-  def check?(player)
-    king = @squares.select do |square, piece|
-      !piece.nil? && piece.instance_of?(King) && piece.color == player.color
-    end
-
-    enemy_pieces = @squares.select do |square, piece|
-      !piece.nil? && piece.color != player.color
-    end
-
-
-    enemy_pieces.each do |square, piece|
-      return true if validate_path(square, king.keys.flatten)
-    end
-    false
-  end
-
   def show_board
     puts
     squares.each do |square,piece|

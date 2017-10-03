@@ -13,7 +13,6 @@ class Player
 
     until from && to
       input = gets.chomp
-      p "Input: #{input}"
       squares = input.dup.split unless input.nil?
 
       if input.empty?

@@ -94,25 +94,6 @@ RSpec.describe "Chess" do
         expect(board.squares[[4,8]]).to be_instance_of Rook
       end
     end
-
-    describe '#check?' do
-      it 'sais that the king is not in check when he isn\'t' do
-        board.add_piece(King.new(:white), [5,8])
-        board.add_piece(Rook.new(:black), [2,7])
-        board.add_piece(Rook.new(:black), [6,1])
-        board.add_piece(Bishop.new(:black), [5,6])
-        expect(board.check?(white)).to be false
-      end
-
-      it 'sais that the king is in check when he is' do
-        board.add_piece(King.new(:white), [5,1])
-        board.add_piece(Rook.new(:black), [5,7])
-        board.add_piece(Rook.new(:black), [6,2])
-        board.add_piece(Bishop.new(:black), [3,3])
-        board.show_board
-        expect(board.check?(white)).to be true
-      end
-    end
   end
 
   describe 'Player' do
@@ -196,6 +177,73 @@ RSpec.describe "Chess" do
       #expect(test_game.play).to raise_error
     #end
   end
+
+  describe '#check?' do
+      it 'sais that the king is not in check when he isn\'t' do
+        board.add_piece(King.new(:white), [5,8])
+        board.add_piece(Rook.new(:black), [2,7])
+        board.add_piece(Rook.new(:black), [6,1])
+        board.add_piece(Bishop.new(:black), [5,6])
+        expect(game.check?(white)).to be false
+      end
+
+      it 'sais that the king is in check when he is' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Rook.new(:black), [5,7])
+        board.add_piece(Rook.new(:black), [6,2])
+        board.add_piece(Bishop.new(:black), [3,3])
+        expect(game.check?(white)).to be true
+      end
+    end
+
+    describe '#mate?' do
+      it 'sais that the king is not in mate when he can evade it' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Queen.new(:white), [6,1])
+        board.add_piece(Rook.new(:black), [1,1])
+        board.add_piece(Pawn.new(:black), [6,2])
+        board.add_piece(Bishop.new(:black), [3,3])
+        board.show_board
+        expect(game.mate?(white)).to be false
+      end
+
+      it 'sais that the king is not in mate when he can capture the oppressor' do
+        board.add_piece(King.new(:white), [8,1])
+        board.add_piece(Queen.new(:black), [7,2])
+        board.add_piece(King.new(:black), [1,1])
+        board.show_board
+        expect(game.mate?(white)).to be false
+      end
+
+      it 'sais that the king is not in mate when the oppressor can be captured' do
+        board.add_piece(King.new(:white), [1,1])
+        board.add_piece(Queen.new(:white), [8,2])
+        board.add_piece(Pawn.new(:white), [7,2])
+        board.add_piece(Rook.new(:black), [7,1])
+        board.add_piece(Rook.new(:black), [6,2])
+        board.show_board
+        expect(game.mate?(white)).to be false
+      end
+
+      it 'sais that the king is not in mate when it can be blocked' do
+        board.add_piece(King.new(:white), [1,1])
+        board.add_piece(Queen.new(:white), [4,3])
+        board.add_piece(Rook.new(:black), [8,1])
+        board.add_piece(Rook.new(:black), [8,2])
+        board.show_board
+        expect(game.mate?(white)).to be false
+      end
+
+      it 'sais that the king is in mate when he is' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Queen.new(:white), [6,1])
+        board.add_piece(Rook.new(:black), [1,1])
+        board.add_piece(Rook.new(:black), [8,2])
+        board.add_piece(Bishop.new(:black), [3,3])
+        board.show_board
+        expect(game.mate?(white)).to be true
+      end
+    end
 
 
 end

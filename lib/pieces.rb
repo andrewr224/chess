@@ -5,6 +5,8 @@ class Piece
     @color = color
   end
 
+  private
+
   def horizontal_move(from, to)
     path = []
 
@@ -92,6 +94,21 @@ class King < Piece
   def calculate_path(from, to)
     return false if ((from[0] - to[0]).abs > 1) || ((from[1] - to[1]).abs > 1)
     []
+  end
+
+  def possible_moves(square)
+    col = square[0]
+    row = square[1]
+
+    moves = [[col + 1, row], [col + 1, row + 1], [col + 1, row -1],
+            [col, row + 1],[col, row - 1],[col - 1, row], [col - 1, row + 1],
+            [col - 1, row - 1]]
+
+    moves.select! do |move|
+      ((1..8).include? move[0]) && ((1..8).include? move[1])
+    end
+
+    moves
   end
 end
 
