@@ -18,8 +18,7 @@ class Board
   end
 
   def validate_presence(square)
-    return false if @squares[square].nil?
-    true
+    @squares[square]
   end
 
   def validate_path(from, to)
@@ -39,6 +38,7 @@ class Board
     true
   end
 
+  # need to check if there's no check
   def castle(to)
     case to
     when [7,1]
