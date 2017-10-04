@@ -1,8 +1,10 @@
 class Piece
   attr_reader :color
+  attr_accessor :moved
 
   def initialize(color)
     @color = color
+    @moved = false
   end
 
   private
@@ -92,8 +94,27 @@ class King < Piece
 
   # but it can castle
   def calculate_path(from, to)
-    return false if ((from[0] - to[0]).abs > 1) || ((from[1] - to[1]).abs > 1)
-    []
+    if @color == :white && from == [5,1]
+      case to
+      when [7,1]
+        return horizontal_move(from, [8,1])
+      when [3,1]
+        return horizontal_move(from, [1,1])
+      end
+    elsif @color == :black && from == [5,8]
+      case to
+      when [7,8]
+        return horizontal_move(from, [8,8])
+      when [3,8]
+        return horizontal_move(from, [1,8])
+      end
+    end
+
+    if ((from[0] - to[0]).abs > 1) || ((from[1] - to[1]).abs > 1)
+      false
+    else
+      []
+    end
   end
 
   def possible_moves(square)
@@ -124,7 +145,8 @@ class Pawn < Piece
     return [] if attack && ((from[0] - to[0]).abs == 1) && ((from[1] - to[1]).abs == 1)
     return false if (from[0] != to[0])
 
-    vertical_move(from, to)
+    return vertical_move(from, to) unless attack
+    false
   end
 end
 
@@ -181,12 +203,12 @@ class Queen < Piece
   end
 
   def calculate_path(from, to)
-    if (from[0] - to[0]).abs == (from[1] - to[1]).abs
-      diagonal_move(from, to)
-    elsif (from[0] == to[0])
+    if (from[0] == to[0])
       vertical_move(from, to)
     elsif (from[1] == to[1])
       horizontal_move(from, to)
+    elsif (from[0] - to[0]).abs == (from[1] - to[1]).abs
+      diagonal_move(from, to)
     else
       false
     end

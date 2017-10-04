@@ -12,11 +12,7 @@ class Chess
 
   def play
     place_pieces
-    make_a_move until game_over
-  end
-
-  def game_over
-    false
+    make_a_move until mate?(players.first)
   end
 
   def make_a_move
@@ -27,9 +23,11 @@ class Chess
     target_piece = nil
     from = nil
     to = nil
+    moved = false
 
-    until from && to
+    until moved
       squares = @players.first.select_squares
+      p squares
       piece = @board.squares[squares[0]]
       target_piece = @board.squares[squares[1]]
 
@@ -39,34 +37,125 @@ class Chess
         puts "Select your piece."
       elsif !@board.validate_path(squares[0], squares[1])
         puts "Illegal move."
+      # castling
+      elsif piece.instance_of?(King)
+        if (squares[1] == [7,1])
+          if @board.squares[[8,1]].instance_of?(Rook) && !piece.moved && !@board.squares[[8,1]].moved
+            path = piece.calculate_path([5,1], [7,1])
+            oppressing_pieces = []
+
+            path.each do |square|
+              oppressor = oppressors(@players.first, square)
+              oppressing_pieces << oppressor unless oppressor.empty?
+            end
+
+            if oppressing_pieces.none? && !check?(@players.first)
+              move_pieces([8,1], [6,1])
+              moved = move_pieces(squares[0], squares[1])
+            else
+              puts "Illegal castling."
+            end
+          else
+            puts "Illegal move."
+          end
+        elsif (squares[1] == [3,1])
+          if @board.squares[[1,1]].instance_of?(Rook) && !piece.moved && !@board.squares[[1,1]].moved
+            path = piece.calculate_path([5,1], [3,1])
+            path.pop
+            oppressing_pieces = []
+
+
+            path.each do |square|
+              oppressor = oppressors(@players.first, square)
+              oppressing_pieces << oppressor unless oppressor.empty?
+            end
+
+            if oppressing_pieces.none? && !check?(@players.first)
+              move_pieces([1,1], [4,1])
+              moved = move_pieces(squares[0], squares[1])
+            else
+              puts "Illegal castling."
+            end
+          else
+            puts "Illegal move."
+          end
+        elsif (squares[1] == [7,8])
+          if @board.squares[[8,8]].instance_of?(Rook) && !piece.moved && !@board.squares[[8,8]].moved
+            path = piece.calculate_path([5,8], [7,8])
+            oppressing_pieces = []
+
+            path.each do |square|
+              oppressor = oppressors(@players.first, square)
+              oppressing_pieces << oppressor unless oppressor.empty?
+            end
+
+            if oppressing_pieces.none? && !check?(@players.first)
+              move_pieces([8,8], [6,8])
+              moved = move_pieces(squares[0], squares[1])
+            else
+              puts "Illegal castling."
+            end
+          else
+            puts "Illegal move."
+          end
+        elsif (squares[1] == [3,8])
+          if @board.squares[[1,8]].instance_of?(Rook) && !piece.moved && !@board.squares[[1,8]].moved
+            path = piece.calculate_path([5,8], [3,8])
+            path.pop
+            oppressing_pieces = []
+
+            path.each do |square|
+              oppressor = oppressors(@players.first, square)
+              oppressing_pieces << oppressor unless oppressor.empty?
+            end
+
+            if oppressing_pieces.none? && !check?(@players.first)
+              move_pieces([1,8], [4,8])
+              moved = move_pieces(squares[0], squares[1])
+            else
+              puts "Illegal castling."
+            end
+          else
+            puts "Illegal move."
+          end
+        else
+          moved = move_pieces(squares[0], squares[1])
+        end
       # check if it's an attack
       elsif target_piece
         if target_piece.color == piece.color
           puts "You cannot capture your own piece."
         elsif piece.instance_of?(Pawn) && (squares[0][0] == squares[1][0])
-          puts "Illegal move."
+          puts "Illegal move. Pawn captures diagonally"
         else
-          from = squares[0]
-          to = squares[1]
+          moved = move_pieces(squares[0], squares[1])
         end
       else
-        from = squares[0]
-        to = squares[1]
+        moved = move_pieces(squares[0], squares[1])
       end
     end
-
-    move_pieces(from, to, piece, target_piece)
 
     @players.reverse!
   end
 
-  def move_pieces(from, to, piece, target_piece=nil)
-    @board.remove_piece(from)
+  def move_pieces(from, to)
+    piece = @board.remove_piece(from)
+    target_piece = @board.remove_piece(to)
     @board.add_piece(piece, to)
+
+    if check?(@players.first)
+      puts "Illegal move: you cannot expose your King"
+      @board.add_piece(piece, from)
+      @board.add_piece(target_piece, to)
+      return false
+    end
+
+    piece.moved = true
 
     if target_piece
       puts "#{@players.first.color.capitalize} captured #{@players.last.color.capitalize}'s #{target_piece.class}"
     end
+    true
   end
 
   def check?(player)

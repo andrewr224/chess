@@ -58,42 +58,6 @@ RSpec.describe "Chess" do
         end
       end
     end
-
-    describe '#castling' do
-      it 'can castle kingside for white' do
-        board.add_piece(King.new(:white), [5,1])
-        board.add_piece(Rook.new(:white), [8,1])
-        board.castle([7,1])
-        expect(board.squares[[5,1]]).to be_nil
-        expect(board.squares[[8,1]]).to be_nil
-        expect(board.squares[[7,1]]).to be_instance_of King
-        expect(board.squares[[6,1]]).to be_instance_of Rook
-      end
-
-      it 'can castle kingside for black' do
-        board.add_piece(King.new(:black), [5,8])
-        board.add_piece(Rook.new(:black), [8,8])
-        board.castle([7,8])
-        expect(board.squares[[7,8]]).to be_instance_of King
-        expect(board.squares[[6,8]]).to be_instance_of Rook
-      end
-
-      it 'can castle queenside for white' do
-        board.add_piece(King.new(:white), [5,1])
-        board.add_piece(Rook.new(:white), [1,1])
-        board.castle([3,1])
-        expect(board.squares[[3,1]]).to be_instance_of King
-        expect(board.squares[[4,1]]).to be_instance_of Rook
-      end
-
-      it 'can castle queenside for black' do
-        board.add_piece(King.new(:black), [5,8])
-        board.add_piece(Rook.new(:black), [1,8])
-        board.castle([3,8])
-        expect(board.squares[[3,8]]).to be_instance_of King
-        expect(board.squares[[4,8]]).to be_instance_of Rook
-      end
-    end
   end
 
   describe 'Player' do
@@ -115,6 +79,7 @@ RSpec.describe "Chess" do
   describe '#make_a_move' do
     # too many unfinished methods involved
     it 'can move a Piece on the Board' do
+      board.add_piece(King.new(:white), [5,1])
       board.add_piece(Pawn.new(:white), [2,2])
       game.make_a_move
       expect(board.squares[[2,2]]).to be_nil
@@ -123,6 +88,7 @@ RSpec.describe "Chess" do
 
     context 'when destination is occupied by a piece of opposite color' do
       it 'allows the capture' do
+        board.add_piece(King.new(:white), [5,2])
         board.add_piece(Queen.new(:white), [1,1])
         board.add_piece(Rook.new(:black), [8,1])
         game.make_a_move
@@ -133,6 +99,7 @@ RSpec.describe "Chess" do
 
     context 'when destination is occupied by a piece of same color' do
       it 'does not allow capture, but prompts user from new input' do
+        board.add_piece(King.new(:white), [5,1])
         board.add_piece(Knight.new(:white), [3,1])
         board.add_piece(Pawn.new(:white), [4,3])
         # c1 d3 - fails
@@ -146,6 +113,7 @@ RSpec.describe "Chess" do
 
     context 'when player selects a square with no piece' do
       it 'gets another input from player' do
+        board.add_piece(King.new(:white), [5,1])
         board.add_piece(Pawn.new(:white), [5,2])
         # d2 d4
         # e2 e4
@@ -157,8 +125,10 @@ RSpec.describe "Chess" do
 
     context 'when player selects a piece that is not his/hers' do
       it 'does not allow the move' do
+        board.add_piece(King.new(:white), [5,1])
         board.add_piece(Knight.new(:black), [5,5])
         board.add_piece(Pawn.new(:white), [4,3])
+
         # e5 d3 - fails
         # d3 d4 - works
         game.make_a_move
@@ -169,82 +139,233 @@ RSpec.describe "Chess" do
     end
   end
 
+  describe '#check?' do
+    it 'sais that the king is not in check when he isn\'t' do
+      board.add_piece(King.new(:white), [5,8])
+      board.add_piece(Rook.new(:black), [2,7])
+      board.add_piece(Rook.new(:black), [6,1])
+      board.add_piece(Bishop.new(:black), [5,6])
+      expect(game.check?(white)).to be false
+    end
 
-  # next to add: castling
-  describe 'Test game' do
-    #let(:test_game) { Chess.new }
-    #it 'allwos two players to play a game' do
-      #expect(test_game.play).to raise_error
-    #end
+    it 'sais that the king is in check when he is' do
+      board.add_piece(King.new(:white), [5,1])
+      board.add_piece(Rook.new(:black), [5,7])
+      board.add_piece(Rook.new(:black), [6,2])
+      board.add_piece(Bishop.new(:black), [3,3])
+      expect(game.check?(white)).to be true
+    end
+
+    it 'does not allow a move if it exposes a check' do
+      board.add_piece(King.new(:white), [5,1])
+      board.add_piece(Rook.new(:white), [6,2])
+      board.add_piece(Rook.new(:black), [4,7])
+      board.add_piece(Bishop.new(:black), [7,3])
+      # e1 d1 -false
+      # f2 f8 -false
+      # e1 e2 -true
+      game.make_a_move
+      expect(board.squares[[6,2]]).to be_instance_of Rook
+      expect(board.squares[[4,1]]).to be_nil
+      expect(board.squares[[5,2]]).to be_instance_of King
+    end
   end
 
-  describe '#check?' do
-      it 'sais that the king is not in check when he isn\'t' do
-        board.add_piece(King.new(:white), [5,8])
-        board.add_piece(Rook.new(:black), [2,7])
-        board.add_piece(Rook.new(:black), [6,1])
-        board.add_piece(Bishop.new(:black), [5,6])
-        expect(game.check?(white)).to be false
+  describe '#mate?' do
+    it 'sais that the king is not in mate when he can evade it' do
+      board.add_piece(King.new(:white), [5,1])
+      board.add_piece(Queen.new(:white), [6,1])
+      board.add_piece(Rook.new(:black), [1,1])
+      board.add_piece(Pawn.new(:black), [6,2])
+      board.add_piece(Bishop.new(:black), [3,3])
+      board.show_board
+      expect(game.mate?(white)).to be false
+    end
+
+    it 'sais that the king is not in mate when he can capture the oppressor' do
+      board.add_piece(King.new(:white), [8,1])
+      board.add_piece(Queen.new(:black), [7,2])
+      board.add_piece(King.new(:black), [1,1])
+      expect(game.mate?(white)).to be false
+    end
+
+    it 'sais that the king is not in mate when the oppressor can be captured' do
+      board.add_piece(King.new(:white), [1,1])
+      board.add_piece(Queen.new(:white), [8,2])
+      board.add_piece(Pawn.new(:white), [7,2])
+      board.add_piece(Rook.new(:black), [7,1])
+      board.add_piece(Rook.new(:black), [6,2])
+      expect(game.mate?(white)).to be false
+    end
+
+    it 'sais that the king is not in mate when it can be blocked' do
+      board.add_piece(King.new(:white), [1,1])
+      board.add_piece(Queen.new(:white), [4,3])
+      board.add_piece(Rook.new(:black), [8,1])
+      board.add_piece(Rook.new(:black), [8,2])
+      expect(game.mate?(white)).to be false
+    end
+
+    it 'sais that the king is in mate when he is' do
+      board.add_piece(King.new(:white), [5,1])
+      board.add_piece(Queen.new(:white), [6,1])
+      board.add_piece(Rook.new(:black), [1,1])
+      board.add_piece(Rook.new(:black), [8,2])
+      board.add_piece(Bishop.new(:black), [3,3])
+      expect(game.mate?(white)).to be true
+    end
+  end
+
+  describe 'castling' do
+    context 'when the path is clear' do
+      it 'can castle kingside for white' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Rook.new(:white), [8,1])
+        game.make_a_move
+        expect(board.squares[[5,1]]).to be_nil
+        expect(board.squares[[8,1]]).to be_nil
+        expect(board.squares[[7,1]]).to be_instance_of King
+        expect(board.squares[[6,1]]).to be_instance_of Rook
       end
 
-      it 'sais that the king is in check when he is' do
+      it 'can castle queenside for white' do
         board.add_piece(King.new(:white), [5,1])
-        board.add_piece(Rook.new(:black), [5,7])
-        board.add_piece(Rook.new(:black), [6,2])
-        board.add_piece(Bishop.new(:black), [3,3])
-        expect(game.check?(white)).to be true
+        board.add_piece(Rook.new(:white), [1,1])
+        board.add_piece(Queen.new(:black), [2,8])
+        game.make_a_move
+        expect(board.squares[[3,1]]).to be_instance_of King
+        expect(board.squares[[4,1]]).to be_instance_of Rook
+      end
+
+      it 'can castle kingside for black' do
+        board.add_piece(King.new(:black), [5,8])
+        board.add_piece(Rook.new(:black), [8,8])
+        game.players.reverse!
+        game.make_a_move
+        expect(board.squares[[7,8]]).to be_instance_of King
+        expect(board.squares[[6,8]]).to be_instance_of Rook
+      end
+
+      it 'can castle queenside for black' do
+        board.add_piece(King.new(:black), [5,8])
+        board.add_piece(Rook.new(:black), [1,8])
+        game.players.reverse!
+        game.make_a_move
+        expect(board.squares[[3,8]]).to be_instance_of King
+        expect(board.squares[[4,8]]).to be_instance_of Rook
       end
     end
 
-    describe '#mate?' do
-      it 'sais that the king is not in mate when he can evade it' do
+    context 'when the path is obstructed' do
+      it 'cannot castle kingside for white' do
         board.add_piece(King.new(:white), [5,1])
-        board.add_piece(Queen.new(:white), [6,1])
-        board.add_piece(Rook.new(:black), [1,1])
-        board.add_piece(Pawn.new(:black), [6,2])
-        board.add_piece(Bishop.new(:black), [3,3])
-        board.show_board
-        expect(game.mate?(white)).to be false
+        board.add_piece(Bishop.new(:white), [6,1])
+        board.add_piece(Rook.new(:white), [8,1])
+        game.make_a_move
+        expect(board.squares[[4,3]]).to be_instance_of Bishop
+        expect(board.squares[[5,1]]).to be_instance_of King
+        expect(board.squares[[8,1]]).to be_instance_of Rook
       end
 
-      it 'sais that the king is not in mate when he can capture the oppressor' do
-        board.add_piece(King.new(:white), [8,1])
-        board.add_piece(Queen.new(:black), [7,2])
-        board.add_piece(King.new(:black), [1,1])
-        board.show_board
-        expect(game.mate?(white)).to be false
+      it 'cannot castle queenside for black' do
+        board.add_piece(King.new(:black), [5,8])
+        board.add_piece(Queen.new(:black), [4,8])
+        board.add_piece(Rook.new(:black), [1,8])
+        game.players.reverse!
+        game.make_a_move
+        expect(board.squares[[5,8]]).to be_instance_of King
+        expect(board.squares[[1,8]]).to be_instance_of Rook
+      end
+    end
+
+    context 'when the path is under check' do
+      it 'cannot castle kingside for white' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Bishop.new(:black), [5,2])
+        board.add_piece(Rook.new(:white), [8,1])
+        game.make_a_move
+        expect(board.squares[[5,1]]).to be_instance_of King
+        expect(board.squares[[8,2]]).to be_instance_of Rook
       end
 
-      it 'sais that the king is not in mate when the oppressor can be captured' do
-        board.add_piece(King.new(:white), [1,1])
-        board.add_piece(Queen.new(:white), [8,2])
-        board.add_piece(Pawn.new(:white), [7,2])
-        board.add_piece(Rook.new(:black), [7,1])
-        board.add_piece(Rook.new(:black), [6,2])
-        board.show_board
-        expect(game.mate?(white)).to be false
-      end
-
-      it 'sais that the king is not in mate when it can be blocked' do
-        board.add_piece(King.new(:white), [1,1])
+      it 'cannot castle queenside for black' do
+        board.add_piece(King.new(:black), [5,8])
+        board.add_piece(Rook.new(:black), [1,8])
         board.add_piece(Queen.new(:white), [4,3])
-        board.add_piece(Rook.new(:black), [8,1])
-        board.add_piece(Rook.new(:black), [8,2])
-        board.show_board
-        expect(game.mate?(white)).to be false
-      end
-
-      it 'sais that the king is in mate when he is' do
-        board.add_piece(King.new(:white), [5,1])
-        board.add_piece(Queen.new(:white), [6,1])
-        board.add_piece(Rook.new(:black), [1,1])
-        board.add_piece(Rook.new(:black), [8,2])
-        board.add_piece(Bishop.new(:black), [3,3])
-        board.show_board
-        expect(game.mate?(white)).to be true
+        game.players.reverse!
+        game.make_a_move
+        expect(board.squares[[5,8]]).to be_instance_of King
+        expect(board.squares[[1,3]]).to be_instance_of Rook
       end
     end
 
+    context 'when the King is in check' do
+      it 'cannot castle kingside for white' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Rook.new(:white), [8,1])
+        board.add_piece(Knight.new(:black), [4,3])
+        game.make_a_move
+        expect(board.squares[[7,1]]).to be_nil
+        expect(board.squares[[8,1]]).to be_instance_of Rook
+      end
+
+      it 'cannot castle queenside for black' do
+        board.add_piece(King.new(:black), [5,8])
+        board.add_piece(Rook.new(:black), [1,8])
+        board.add_piece(Pawn.new(:white), [6,7])
+        game.players.reverse!
+        game.make_a_move
+        expect(board.squares[[6,8]]).to be_instance_of King
+        expect(board.squares[[1,8]]).to be_instance_of Rook
+      end
+    end
+
+    context 'when there is no Rook' do
+      it 'cannot castle queenside for white' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Knight.new(:white), [1,1])
+        game.make_a_move
+        expect(board.squares[[5,1]]).to be_instance_of King
+      end
+
+      it 'cannot castle kingside for black' do
+        board.add_piece(King.new(:black), [5,8])
+        board.add_piece(Bishop.new(:black), [8,7])
+        game.players.reverse!
+        game.make_a_move
+        expect(board.squares[[5,8]]).to be_instance_of King
+        expect(board.squares[[7,6]]).to be_instance_of Bishop
+      end
+    end
+
+    context 'when the King or a Rook have moved' do
+      it 'cannot castle kingside if King has moved' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Rook.new(:white), [8,1])
+        game.make_a_move
+        game.players.reverse!
+        game.make_a_move
+        game.players.reverse!
+        game.make_a_move
+        expect(board.squares[[5,1]]).to be_instance_of King
+        expect(board.squares[[8,2]]).to be_instance_of Rook
+      end
+
+      it 'cannot castle kingside if Rook has moved' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Rook.new(:white), [8,1])
+        puts "=========We are here!========"
+        game.make_a_move
+        game.players.reverse!
+        game.make_a_move
+        game.players.reverse!
+        game.make_a_move
+        board.show_board
+        expect(board.squares[[5,2]]).to be_instance_of King
+        expect(board.squares[[8,1]]).to be_instance_of Rook
+      end
+    end
+  end
 
 end
 
