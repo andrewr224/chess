@@ -13,6 +13,7 @@ class Chess
   def play
     place_pieces
     make_a_move until mate?(players.first)
+    puts "#{players.last.color.capitalize} is victorious!"
   end
 
   def make_a_move
@@ -214,6 +215,7 @@ class Chess
 
   def mate?(player)
     oppressors = oppressors(player, find_the_king(player)[1])
+    return false if oppressors.empty?
     if oppressors.size > 1
       !can_evade?(player)
     else
