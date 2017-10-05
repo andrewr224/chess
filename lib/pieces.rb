@@ -94,14 +94,14 @@ class King < Piece
 
   # but it can castle
   def calculate_path(from, to)
-    if @color == :white && from == [5,1]
+    if @color == :white && !@moved
       case to
       when [7,1]
         return horizontal_move(from, [8,1])
       when [3,1]
         return horizontal_move(from, [1,1])
       end
-    elsif @color == :black && from == [5,8]
+    elsif @color == :black && !@moved
       case to
       when [7,8]
         return horizontal_move(from, [8,8])

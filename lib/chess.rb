@@ -37,90 +37,8 @@ class Chess
         puts "Select your piece."
       elsif !@board.validate_path(squares[0], squares[1])
         puts "Illegal move."
-      # castling
       elsif piece.instance_of?(King)
-        if (squares[1] == [7,1])
-          if @board.squares[[8,1]].instance_of?(Rook) && !piece.moved && !@board.squares[[8,1]].moved
-            path = piece.calculate_path([5,1], [7,1])
-            oppressing_pieces = []
-
-            path.each do |square|
-              oppressor = oppressors(@players.first, square)
-              oppressing_pieces << oppressor unless oppressor.empty?
-            end
-
-            if oppressing_pieces.none? && !check?(@players.first)
-              move_pieces([8,1], [6,1])
-              moved = move_pieces(squares[0], squares[1])
-            else
-              puts "Illegal castling."
-            end
-          else
-            puts "Illegal move."
-          end
-        elsif (squares[1] == [3,1])
-          if @board.squares[[1,1]].instance_of?(Rook) && !piece.moved && !@board.squares[[1,1]].moved
-            path = piece.calculate_path([5,1], [3,1])
-            path.pop
-            oppressing_pieces = []
-
-
-            path.each do |square|
-              oppressor = oppressors(@players.first, square)
-              oppressing_pieces << oppressor unless oppressor.empty?
-            end
-
-            if oppressing_pieces.none? && !check?(@players.first)
-              move_pieces([1,1], [4,1])
-              moved = move_pieces(squares[0], squares[1])
-            else
-              puts "Illegal castling."
-            end
-          else
-            puts "Illegal move."
-          end
-        elsif (squares[1] == [7,8])
-          if @board.squares[[8,8]].instance_of?(Rook) && !piece.moved && !@board.squares[[8,8]].moved
-            path = piece.calculate_path([5,8], [7,8])
-            oppressing_pieces = []
-
-            path.each do |square|
-              oppressor = oppressors(@players.first, square)
-              oppressing_pieces << oppressor unless oppressor.empty?
-            end
-
-            if oppressing_pieces.none? && !check?(@players.first)
-              move_pieces([8,8], [6,8])
-              moved = move_pieces(squares[0], squares[1])
-            else
-              puts "Illegal castling."
-            end
-          else
-            puts "Illegal move."
-          end
-        elsif (squares[1] == [3,8])
-          if @board.squares[[1,8]].instance_of?(Rook) && !piece.moved && !@board.squares[[1,8]].moved
-            path = piece.calculate_path([5,8], [3,8])
-            path.pop
-            oppressing_pieces = []
-
-            path.each do |square|
-              oppressor = oppressors(@players.first, square)
-              oppressing_pieces << oppressor unless oppressor.empty?
-            end
-
-            if oppressing_pieces.none? && !check?(@players.first)
-              move_pieces([1,8], [4,8])
-              moved = move_pieces(squares[0], squares[1])
-            else
-              puts "Illegal castling."
-            end
-          else
-            puts "Illegal move."
-          end
-        else
-          moved = move_pieces(squares[0], squares[1])
-        end
+        moved = kings_move(squares, piece)
       # check if it's an attack
       elsif target_piece
         if target_piece.color == piece.color
@@ -136,6 +54,54 @@ class Chess
     end
 
     @players.reverse!
+  end
+
+  def kings_move(squares, piece)
+    if (squares[1] == [7,1]) && !piece.moved
+      if @board.squares[[8,1]].instance_of?(Rook) && !@board.squares[[8,1]].moved
+        castle(squares, piece, [8,1])
+      else
+        puts "Illegal move."
+      end
+    elsif (squares[1] == [3,1]) && !piece.moved
+      if @board.squares[[1,1]].instance_of?(Rook) && !@board.squares[[1,1]].moved
+        castle(squares, piece, [1,1])
+      else
+        puts "Illegal move."
+      end
+    elsif (squares[1] == [7,8]) && !piece.moved
+      if @board.squares[[8,8]].instance_of?(Rook) && !@board.squares[[8,8]].moved
+        castle(squares, piece, [8,8])
+      else
+        puts "Illegal move."
+      end
+    elsif (squares[1] == [3,8]) && !piece.moved
+      if @board.squares[[1,8]].instance_of?(Rook) && !@board.squares[[1,8]].moved
+        castle(squares, piece, [1,8])
+      else
+        puts "Illegal move."
+      end
+    else
+      move_pieces(squares[0], squares[1])
+    end
+  end
+
+  def castle(squares, piece, rook_square)
+    path = piece.calculate_path(squares[0], squares[1])
+    path.pop if path.length > 2
+    oppressing_pieces = []
+
+    path.each do |square|
+      oppressor = oppressors(@players.first, square)
+      oppressing_pieces << oppressor unless oppressor.empty?
+    end
+
+    if oppressing_pieces.none? && !check?(@players.first)
+      move_pieces(rook_square, [(squares[0][0] + squares[1][0]) / 2, squares[0][1]])
+      move_pieces(squares[0], squares[1])
+    else
+      puts "Illegal castling."
+    end
   end
 
   def move_pieces(from, to)
@@ -264,14 +230,11 @@ class Chess
   end
 
   def place_pieces
-    @black_king = King.new(:black)
-    @white_king = King.new(:white)
-
     @board.add_piece(Rook.new(:black), [1,8])
     @board.add_piece(Knight.new(:black), [2,8])
     @board.add_piece(Bishop.new(:black), [3,8])
     @board.add_piece(Queen.new(:black), [4,8])
-    @board.add_piece(@black_king, [5,8])
+    @board.add_piece(King.new(:black), [5,8])
     @board.add_piece(Bishop.new(:black), [6,8])
     @board.add_piece(Knight.new(:black), [7,8])
     @board.add_piece(Rook.new(:black), [8,8])
@@ -298,7 +261,7 @@ class Chess
     @board.add_piece(Knight.new(:white), [2,1])
     @board.add_piece(Bishop.new(:white), [3,1])
     @board.add_piece(Queen.new(:white), [4,1])
-    @board.add_piece(@white_king, [5,1])
+    @board.add_piece(King.new(:white), [5,1])
     @board.add_piece(Bishop.new(:white), [6,1])
     @board.add_piece(Knight.new(:white), [7,1])
     @board.add_piece(Rook.new(:white), [8,1])
@@ -306,6 +269,3 @@ class Chess
 end
 
 #Chess.new.play
-#g = Chess.new
-#g.place_pieces
-#g.board.check?(g.white_king)

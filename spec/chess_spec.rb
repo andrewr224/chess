@@ -354,13 +354,11 @@ RSpec.describe "Chess" do
       it 'cannot castle kingside if Rook has moved' do
         board.add_piece(King.new(:white), [5,1])
         board.add_piece(Rook.new(:white), [8,1])
-        puts "=========We are here!========"
         game.make_a_move
         game.players.reverse!
         game.make_a_move
         game.players.reverse!
         game.make_a_move
-        board.show_board
         expect(board.squares[[5,2]]).to be_instance_of King
         expect(board.squares[[8,1]]).to be_instance_of Rook
       end
