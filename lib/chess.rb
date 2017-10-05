@@ -12,13 +12,19 @@ class Chess
 
   def play
     place_pieces
-    make_a_move until mate?(players.first)
-    puts "#{players.last.color.capitalize} is victorious!"
+    puts "Welcome to chess game. Please use explicit 'e2 e4' syntax to move pieces."
+    make_a_move until game_over?
+    puts "Mate! #{@players.last.color.capitalize} is victorious!"
+  end
+
+  def game_over?
+    mate?(@players.first)
   end
 
   def make_a_move
+    puts "Check!" if check?(@players.first)
     @board.show_board
-    puts "#{@players.first.color.capitalize}'s turn: "
+    print "\n#{@players.first.color.capitalize}'s turn: "
 
     piece = nil
     target_piece = nil
@@ -28,7 +34,6 @@ class Chess
 
     until moved
       squares = @players.first.select_squares
-      p squares
       piece = @board.squares[squares[0]]
       target_piece = @board.squares[squares[1]]
 
@@ -158,7 +163,6 @@ class Chess
 
     # so king cannot hide behind himself
     @board.remove_piece(kings_square)
-
     moves.select! do |move|
       enemy_pieces.none? do |square, piece|
         if square == move
@@ -170,7 +174,6 @@ class Chess
         end
       end
     end
-
     @board.add_piece(king, kings_square)
 
     moves.any?
@@ -178,19 +181,20 @@ class Chess
 
   def can_block?(player, oppressor)
     attack_line = oppressor.values[0].calculate_path(oppressor.keys.flatten, find_the_king(player)[1])
+    attack_line << oppressor.keys[0]
 
     pieces = @board.squares.select do |square, piece|
       !piece.nil? && !piece.instance_of?(King) && piece.color == player.color
     end
 
-    attack_line.each do |line|
+    attack_line.each do |square_1|
       pieces.each do |square, piece|
         # checking if it will be a check when the piece is moved
-        if @board.validate_path(square, line)
+        if @board.validate_path(square, square_1)
           board.remove_piece(square)
-          board.add_piece(piece, line)
+          board.add_piece(piece, square_1)
           saved = check?(player)
-          board.remove_piece(line)
+          board.remove_piece(square_1)
           board.add_piece(piece, square)
           return true unless saved
         end
@@ -200,26 +204,13 @@ class Chess
     false
   end
 
-  def can_capture?(player, oppressor)
-    pieces = @board.squares.select do |square, piece|
-      !piece.nil? && !piece.instance_of?(King) && piece.color == player.color
-    end
-
-    oppressor = oppressor.keys.flatten
-
-    pieces.each do |square, piece|
-      return true if @board.validate_path(square, oppressor)
-    end
-
-  end
-
   def mate?(player)
     oppressors = oppressors(player, find_the_king(player)[1])
     return false if oppressors.empty?
     if oppressors.size > 1
       !can_evade?(player)
     else
-      !(can_evade?(player) || can_capture?(player, oppressors) || can_block?(player, oppressors))
+      !(can_evade?(player) || can_block?(player, oppressors))
     end
   end
 
