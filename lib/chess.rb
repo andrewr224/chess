@@ -89,6 +89,7 @@ class Chess
       puts "#{@players.first.color.capitalize} captured #{@players.last.color.capitalize}'s #{target_piece.class}"
     end
 
+    # pawn promotion
     if piece.instance_of?(Pawn) && (to[1] == 8 || to[1] == 1)
       puts "#{@players.first.color.capitalize}'s Pawn has reached the last rank and is to be promoted."
       puts "Please select a piece you want it to be promoted to:"
@@ -248,42 +249,29 @@ class Chess
   end
 
   def place_pieces
-    @board.add_piece(Rook.new(:black), [1,8])
-    @board.add_piece(Knight.new(:black), [2,8])
-    @board.add_piece(Bishop.new(:black), [3,8])
-    @board.add_piece(Queen.new(:black), [4,8])
-    @board.add_piece(King.new(:black), [5,8])
-    @board.add_piece(Bishop.new(:black), [6,8])
-    @board.add_piece(Knight.new(:black), [7,8])
-    @board.add_piece(Rook.new(:black), [8,8])
+    @players.each do |player|
+      color = player.color
+      if color == :white
+        rank, pawn_rank = 1, 2
+      else
+        rank, pawn_rank = 8, 7
+      end
 
-    @board.add_piece(Pawn.new(:black), [1,7])
-    @board.add_piece(Pawn.new(:black), [2,7])
-    @board.add_piece(Pawn.new(:black), [3,7])
-    @board.add_piece(Pawn.new(:black), [4,7])
-    @board.add_piece(Pawn.new(:black), [5,7])
-    @board.add_piece(Pawn.new(:black), [6,7])
-    @board.add_piece(Pawn.new(:black), [7,7])
-    @board.add_piece(Pawn.new(:black), [8,7])
+      @board.add_piece(Rook.new(color), [1,rank])
+      @board.add_piece(Knight.new(color), [2,rank])
+      @board.add_piece(Bishop.new(color), [3,rank])
+      @board.add_piece(Queen.new(color), [4,rank])
+      @board.add_piece(King.new(color), [5,rank])
+      @board.add_piece(Bishop.new(color), [6,rank])
+      @board.add_piece(Knight.new(color), [7,rank])
+      @board.add_piece(Rook.new(color), [8,rank])
 
-    @board.add_piece(Pawn.new(:white), [1,2])
-    @board.add_piece(Pawn.new(:white), [2,2])
-    @board.add_piece(Pawn.new(:white), [3,2])
-    @board.add_piece(Pawn.new(:white), [4,2])
-    @board.add_piece(Pawn.new(:white), [5,2])
-    @board.add_piece(Pawn.new(:white), [6,2])
-    @board.add_piece(Pawn.new(:white), [7,2])
-    @board.add_piece(Pawn.new(:white), [8,2])
+      (1..8).each do |col|
+        @board.add_piece(Pawn.new(color), [col,pawn_rank])
+      end
 
-    @board.add_piece(Rook.new(:white), [1,1])
-    @board.add_piece(Knight.new(:white), [2,1])
-    @board.add_piece(Bishop.new(:white), [3,1])
-    @board.add_piece(Queen.new(:white), [4,1])
-    @board.add_piece(King.new(:white), [5,1])
-    @board.add_piece(Bishop.new(:white), [6,1])
-    @board.add_piece(Knight.new(:white), [7,1])
-    @board.add_piece(Rook.new(:white), [8,1])
+    end
   end
 end
 
-#Chess.new.play
+Chess.new.play
