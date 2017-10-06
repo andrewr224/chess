@@ -13,23 +13,25 @@ class Chess
   def play
     place_pieces
     puts "Welcome to chess game. Please use explicit 'e2 e4' syntax to move pieces."
-    make_a_move until game_over?
+    take_turn until game_over?
     puts "Mate! #{@players.last.color.capitalize} is victorious!"
   end
 
   def game_over?
-    mate?(@players.first)
+    if check?(@players.first)
+      puts "Check!"
+      mate?(@players.first)
+    end
+  end
+
+  def take_turn
+    @board.show_board
+    print "\n#{@players.first.color.capitalize}'s turn: "
+    make_a_move
+    @players.reverse!
   end
 
   def make_a_move
-    puts "Check!" if check?(@players.first)
-    @board.show_board
-    print "\n#{@players.first.color.capitalize}'s turn: "
-
-    piece = nil
-    target_piece = nil
-    from = nil
-    to = nil
     moved = false
 
     until moved
@@ -37,9 +39,7 @@ class Chess
       piece = @board.squares[squares[0]]
       target_piece = @board.squares[squares[1]]
 
-      if !piece
-        print "Select a piece to move: "
-      elsif @players.first.color != piece.color
+      if !piece || @players.first.color != piece.color
         print "Select your piece to move: "
       elsif !@board.validate_path(squares[0], squares[1])
         print "Illegal move. Try again: "
@@ -58,8 +58,6 @@ class Chess
         moved = move_pieces(squares[0], squares[1])
       end
     end
-
-    @players.reverse!
   end
 
   def kings_move(squares, piece)

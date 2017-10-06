@@ -343,9 +343,7 @@ RSpec.describe "Chess" do
         board.add_piece(King.new(:white), [5,1])
         board.add_piece(Rook.new(:white), [8,1])
         game.make_a_move
-        game.players.reverse!
         game.make_a_move
-        game.players.reverse!
         game.make_a_move
         expect(board.squares[[5,1]]).to be_instance_of King
         expect(board.squares[[8,2]]).to be_instance_of Rook
@@ -355,9 +353,7 @@ RSpec.describe "Chess" do
         board.add_piece(King.new(:white), [5,1])
         board.add_piece(Rook.new(:white), [8,1])
         game.make_a_move
-        game.players.reverse!
         game.make_a_move
-        game.players.reverse!
         game.make_a_move
         expect(board.squares[[5,2]]).to be_instance_of King
         expect(board.squares[[8,1]]).to be_instance_of Rook
