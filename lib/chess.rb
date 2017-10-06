@@ -15,6 +15,7 @@ class Chess
     puts "Welcome to chess game. Please use explicit 'e2 e4' syntax to move pieces."
     take_turn until game_over?
     puts "Mate! #{@players.last.color.capitalize} is victorious!"
+    @board.show_board
   end
 
   def game_over?
@@ -120,11 +121,20 @@ class Chess
       return false
     end
 
-    piece.moved = true
 
     if target_piece
       puts "#{@players.first.color.capitalize} captured #{@players.last.color.capitalize}'s #{target_piece.class}"
     end
+
+    if piece.instance_of?(Pawn) && (to[1] == 8 || to[1] == 1)
+      puts "#{@players.first.color.capitalize}'s Pawn has reached the last rank and is to be promoted."
+      puts "Please select a piece you want it to be promoted to:"
+      puts "(use 'q', 'r', 'b', and 'k' for Queen, Rook, Bishop, and Knight)"
+      @board.remove_piece(to)
+      @board.add_piece(@players.first.select_piece.new(@players.first.color), to)
+    end
+
+    piece.moved = true
     true
   end
 
@@ -259,4 +269,4 @@ class Chess
   end
 end
 
-#Chess.new.play
+Chess.new.play

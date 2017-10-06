@@ -3,9 +3,10 @@ require 'chess'
 RSpec.describe "Chess" do
   let(:game) { Chess.new }
   let(:board) { game.board }
+  let(:show_board) { board.show_board }
   let(:white) { game.players.first }
 
-  it "is a game" do
+  it "is a Chess game" do
     expect(game).to be_instance_of Chess
   end
 
@@ -178,7 +179,6 @@ RSpec.describe "Chess" do
       board.add_piece(Rook.new(:black), [1,1])
       board.add_piece(Pawn.new(:black), [6,2])
       board.add_piece(Bishop.new(:black), [3,3])
-      board.show_board
       expect(game.mate?(white)).to be false
     end
 
@@ -361,5 +361,23 @@ RSpec.describe "Chess" do
     end
   end
 
+  describe 'Pawn promotion' do
+    context 'when Pawn reaches the last rank' do
+      it 'is promoted to a white Queen' do
+        board.add_piece(Pawn.new(:white), [4,7])
+        game.move_pieces([4,7],[4,8])
+        expect(board.squares[[4,8]]).to be_instance_of Queen
+      end
+
+      it 'is promoted to a black Rook' do
+        board.add_piece(King.new(:white), [1,1])
+        board.add_piece(King.new(:black), [1,8])
+        board.add_piece(Pawn.new(:black), [4,2])
+        board.add_piece(Knight.new(:white), [5,1])
+        game.move_pieces([4,2],[5,1])
+        expect(board.squares[[5,1]]).to be_instance_of Rook
+      end
+    end
+  end
 end
 

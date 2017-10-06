@@ -6,7 +6,6 @@ class Player
   end
 
   def select_squares
-    input = nil
     from = nil
     to = nil
 
@@ -59,5 +58,24 @@ class Player
     else
       false
     end
+  end
+
+  def select_piece
+    choice = nil
+    until choice
+      choice = case gets.chomp.downcase[0]
+      when 'q'
+        Queen
+      when 'r'
+        Rook
+      when 'b'
+        Bishop
+      when 'k'
+        Knight
+      else
+        nil
+      end
+    end
+    choice
   end
 end
