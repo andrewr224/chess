@@ -38,19 +38,19 @@ class Chess
       target_piece = @board.squares[squares[1]]
 
       if !piece
-        puts "Select a piece to move."
+        print "Select a piece to move: "
       elsif @players.first.color != piece.color
-        puts "Select your piece."
+        print "Select your piece to move: "
       elsif !@board.validate_path(squares[0], squares[1])
-        puts "Illegal move."
+        print "Illegal move. Try again: "
       elsif piece.instance_of?(King)
         moved = kings_move(squares, piece)
       # check if it's an attack
       elsif target_piece
         if target_piece.color == piece.color
-          puts "You cannot capture your own piece."
+          print "Square is occupied by your own piece. "
         elsif piece.instance_of?(Pawn) && (squares[0][0] == squares[1][0])
-          puts "Illegal move. Pawn captures diagonally"
+          print "Illegal move. Try again: "
         else
           moved = move_pieces(squares[0], squares[1])
         end
@@ -67,25 +67,25 @@ class Chess
       if @board.squares[[8,1]].instance_of?(Rook) && !@board.squares[[8,1]].moved
         castle(squares, piece, [8,1])
       else
-        puts "Illegal move."
+        print "Illegal move. Try again: "
       end
     elsif (squares[1] == [3,1]) && !piece.moved
       if @board.squares[[1,1]].instance_of?(Rook) && !@board.squares[[1,1]].moved
         castle(squares, piece, [1,1])
       else
-        puts "Illegal move."
+        print "Illegal move. Try again: "
       end
     elsif (squares[1] == [7,8]) && !piece.moved
       if @board.squares[[8,8]].instance_of?(Rook) && !@board.squares[[8,8]].moved
         castle(squares, piece, [8,8])
       else
-        puts "Illegal move."
+        print "Illegal move. Try again: "
       end
     elsif (squares[1] == [3,8]) && !piece.moved
       if @board.squares[[1,8]].instance_of?(Rook) && !@board.squares[[1,8]].moved
         castle(squares, piece, [1,8])
       else
-        puts "Illegal move."
+        print "Illegal move. Try again: "
       end
     else
       move_pieces(squares[0], squares[1])
@@ -106,7 +106,7 @@ class Chess
       move_pieces(rook_square, [(squares[0][0] + squares[1][0]) / 2, squares[0][1]])
       move_pieces(squares[0], squares[1])
     else
-      puts "Illegal castling."
+      print "Illegal move. Try again: "
     end
   end
 
@@ -116,7 +116,7 @@ class Chess
     @board.add_piece(piece, to)
 
     if check?(@players.first)
-      puts "Illegal move: you cannot expose your King"
+      print "Illegal move: you cannot expose your King."
       @board.add_piece(piece, from)
       @board.add_piece(target_piece, to)
       return false

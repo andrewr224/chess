@@ -15,11 +15,11 @@ class Player
       squares = input.dup.split unless input.nil?
 
       if input.empty?
-        puts "Invalid input. Try again: "
+        print "Invalid input. Try again: "
       elsif (squares.length != 2) || (squares[0].length != 2) || (squares[1].length != 2)
-        puts "Invalid input. Try again: "
+        print "Invalid input. Try again: "
       elsif squares[0] == squares[1]
-        puts "Invalid input. Try again: "
+        print "Invalid input. Try again: "
       else
         from = change_to_coordinates(squares[0])
         to = change_to_coordinates(squares[1])
