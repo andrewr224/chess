@@ -2,9 +2,11 @@ require_relative 'squares'
 
 class Board
   attr_reader :squares
+  attr_accessor :passing_pawn
 
   def initialize
     @squares = $layout.dup
+    @passing_pawn = nil
   end
 
   def add_piece(piece, position)
@@ -26,7 +28,13 @@ class Board
     path = []
 
     if piece.instance_of? Pawn
-      path = piece.calculate_path(from, to, validate_presence(to))
+      if @passing_pawn
+        if to == @passing_pawn[0]
+          path = piece.calculate_path(from, to, true)
+        end
+      else
+        path = piece.calculate_path(from, to, validate_presence(to))
+      end
     else
       path = piece.calculate_path(from, to)
     end

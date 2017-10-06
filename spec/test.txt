@@ -63,6 +63,9 @@ e1 e2
 q
 r
 
+d2 d4
+e4 d3
+
 # test game
 d2 d4
 d7 d5

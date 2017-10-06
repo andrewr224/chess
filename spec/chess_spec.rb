@@ -3,7 +3,6 @@ require 'chess'
 RSpec.describe "Chess" do
   let(:game) { Chess.new }
   let(:board) { game.board }
-  let(:show_board) { board.show_board }
   let(:white) { game.players.first }
 
   it "is a Chess game" do
@@ -377,6 +376,20 @@ RSpec.describe "Chess" do
         game.move_pieces([4,2],[5,1])
         expect(board.squares[[5,1]]).to be_instance_of Rook
       end
+    end
+  end
+
+  describe 'en passant' do
+    it 'can capture en passant' do
+      board.add_piece(King.new(:white), [1,1])
+      board.add_piece(King.new(:black), [1,8])
+      board.add_piece(Pawn.new(:white), [4,2])
+      board.add_piece(Pawn.new(:black), [5,4])
+      game.make_a_move
+      game.players.reverse!
+      game.make_a_move
+      expect(board.squares[[4,3]]).to be_instance_of Pawn
+      expect(board.squares[[4,4]]).to be nil
     end
   end
 end

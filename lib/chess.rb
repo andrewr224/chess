@@ -61,6 +61,52 @@ class Chess
     end
   end
 
+  def move_pieces(from, to)
+    piece = @board.remove_piece(from)
+    target_piece = @board.remove_piece(to)
+    @board.add_piece(piece, to)
+    pawn = nil
+
+    # capture en passant
+    if @board.passing_pawn && piece.instance_of?(Pawn) && (to == @board.passing_pawn[0])
+      pawn = @board.passing_pawn[1]
+      target_piece = @board.remove_piece(pawn)
+    end
+
+    # so the king is not exposed
+    if check?(@players.first)
+      print "Illegal move: you cannot expose your King."
+      @board.add_piece(piece, from)
+      if pawn
+        @board.add_piece(target_piece, pawn)
+      else
+        @board.add_piece(target_piece, to)
+      end
+      return false
+    end
+
+    if target_piece
+      puts "#{@players.first.color.capitalize} captured #{@players.last.color.capitalize}'s #{target_piece.class}"
+    end
+
+    if piece.instance_of?(Pawn) && (to[1] == 8 || to[1] == 1)
+      puts "#{@players.first.color.capitalize}'s Pawn has reached the last rank and is to be promoted."
+      puts "Please select a piece you want it to be promoted to:"
+      puts "(use 'q', 'r', 'b', and 'k' for Queen, Rook, Bishop, and Knight)"
+      @board.remove_piece(to)
+      @board.add_piece(@players.first.select_piece.new(@players.first.color), to)
+    end
+
+    # en passant
+    @board.passing_pawn = nil if @board.passing_pawn
+    if piece.instance_of?(Pawn) && (from[1] == 2 || from[1] == 7) && (to[1] == 4 || to[1] == 5)
+      @board.passing_pawn = [[from[0], (from[1] + to[1]) / 2], to]
+    end
+
+    piece.moved = true
+    true
+  end
+
   def kings_move(squares, piece)
     if (squares[1] == [7,1]) && !piece.moved
       if @board.squares[[8,1]].instance_of?(Rook) && !@board.squares[[8,1]].moved
@@ -107,35 +153,6 @@ class Chess
     else
       print "Illegal move. Try again: "
     end
-  end
-
-  def move_pieces(from, to)
-    piece = @board.remove_piece(from)
-    target_piece = @board.remove_piece(to)
-    @board.add_piece(piece, to)
-
-    if check?(@players.first)
-      print "Illegal move: you cannot expose your King."
-      @board.add_piece(piece, from)
-      @board.add_piece(target_piece, to)
-      return false
-    end
-
-
-    if target_piece
-      puts "#{@players.first.color.capitalize} captured #{@players.last.color.capitalize}'s #{target_piece.class}"
-    end
-
-    if piece.instance_of?(Pawn) && (to[1] == 8 || to[1] == 1)
-      puts "#{@players.first.color.capitalize}'s Pawn has reached the last rank and is to be promoted."
-      puts "Please select a piece you want it to be promoted to:"
-      puts "(use 'q', 'r', 'b', and 'k' for Queen, Rook, Bishop, and Knight)"
-      @board.remove_piece(to)
-      @board.add_piece(@players.first.select_piece.new(@players.first.color), to)
-    end
-
-    piece.moved = true
-    true
   end
 
   def check?(player)
@@ -269,4 +286,4 @@ class Chess
   end
 end
 
-Chess.new.play
+#Chess.new.play
