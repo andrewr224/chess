@@ -14,14 +14,18 @@ class Chess
     place_pieces
     puts "Welcome to chess game. Please use explicit 'e2 e4' syntax to move pieces."
     take_turn until game_over?
-    puts "Mate! #{@players.last.color.capitalize} is victorious!"
     @board.show_board
   end
 
   def game_over?
     if check?(@players.first)
       puts "Check!"
-      mate?(@players.first)
+      if mate?(@players.first)
+        puts "Mate! #{@players.last.color.capitalize} is victorious!"
+      end
+    elsif stalemate?(@players.first)
+      puts "It's a draw! (Stalemate)."
+      true
     end
   end
 
@@ -248,6 +252,27 @@ class Chess
     [king.values[0], king.keys.flatten]
   end
 
+  def stalemate?(player)
+    pieces = @board.squares.select do |square, piece|
+      !piece.nil? && piece.color == player.color
+    end
+
+    pieces.none? do |location, piece|
+      @board.squares.any? do |square, content|
+        if square == location
+          false
+        elsif @board.validate_path(location, square)
+          @board.remove_piece(location)
+          @board.add_piece(piece, square)
+          legal = !check?(player)
+          @board.remove_piece(square)
+          @board.add_piece(piece, location)
+          true if legal
+        end
+      end
+    end
+  end
+
   def place_pieces
     @players.each do |player|
       color = player.color
@@ -269,9 +294,9 @@ class Chess
       (1..8).each do |col|
         @board.add_piece(Pawn.new(color), [col,pawn_rank])
       end
-
     end
+
   end
 end
 
-Chess.new.play
+#Chess.new.play

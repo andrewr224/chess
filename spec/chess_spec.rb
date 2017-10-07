@@ -392,5 +392,30 @@ RSpec.describe "Chess" do
       expect(board.squares[[4,4]]).to be nil
     end
   end
+
+  describe 'Draw by' do
+    context 'stalemate' do
+      it 'declares a draw when there are no legal moves' do
+        board.add_piece(King.new(:white), [7,1])
+        board.add_piece(Pawn.new(:white), [7,7])
+        board.add_piece(King.new(:black), [7,8])
+        board.add_piece(Queen.new(:black), [5,3])
+        board.show_board
+        game.make_a_move
+        game.players.reverse!
+        game.make_a_move
+        game.players.reverse!
+        board.show_board
+        expect(game.stalemate?(white)).to be true
+        expect(game.stalemate?(game.players.last)).to be false
+      end
+    end
+
+    context 'insufficient material' do
+      it 'declares a draw' do
+
+      end
+    end
+  end
 end
 
