@@ -165,17 +165,13 @@ class Chess
   end
 
   def oppressors(target)
-    oppressors = @board.squares.select do |square, piece|
-      if !piece.nil? && piece.color == @players.last.color
-        if piece.instance_of?(Pawn)
-          piece.calculate_path(square, target, true)
-        else
-          @board.validate_path(square, target)
-        end
+    select_pieces(true).select do |square, piece|
+      if piece.instance_of?(Pawn)
+        piece.calculate_path(square, target, true)
+      else
+        @board.validate_path(square, target)
       end
     end
-
-    oppressors
   end
 
   def can_evade?
