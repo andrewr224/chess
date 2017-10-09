@@ -178,14 +178,14 @@ RSpec.describe "Chess" do
       board.add_piece(Rook.new(:black), [1,1])
       board.add_piece(Pawn.new(:black), [6,2])
       board.add_piece(Bishop.new(:black), [3,3])
-      expect(game.mate?(white)).to be false
+      expect(game.mate?).to be false
     end
 
     it 'sais that the king is not in mate when he can capture the oppressor' do
       board.add_piece(King.new(:white), [8,1])
       board.add_piece(Queen.new(:black), [7,2])
       board.add_piece(King.new(:black), [1,1])
-      expect(game.mate?(white)).to be false
+      expect(game.mate?).to be false
     end
 
     it 'sais that the king is not in mate when the oppressor can be captured' do
@@ -194,7 +194,7 @@ RSpec.describe "Chess" do
       board.add_piece(Pawn.new(:white), [7,2])
       board.add_piece(Rook.new(:black), [7,1])
       board.add_piece(Rook.new(:black), [6,2])
-      expect(game.mate?(white)).to be false
+      expect(game.mate?).to be false
     end
 
     it 'sais that the king is not in mate when it can be blocked' do
@@ -202,7 +202,7 @@ RSpec.describe "Chess" do
       board.add_piece(Queen.new(:white), [4,3])
       board.add_piece(Rook.new(:black), [8,1])
       board.add_piece(Rook.new(:black), [8,2])
-      expect(game.mate?(white)).to be false
+      expect(game.mate?).to be false
     end
 
     it 'sais that the king is in mate when he is' do
@@ -211,7 +211,7 @@ RSpec.describe "Chess" do
       board.add_piece(Rook.new(:black), [1,1])
       board.add_piece(Rook.new(:black), [8,2])
       board.add_piece(Bishop.new(:black), [3,3])
-      expect(game.mate?(white)).to be true
+      expect(game.mate?).to be true
     end
   end
 
@@ -414,7 +414,6 @@ RSpec.describe "Chess" do
       it 'declares a draw' do
         board.add_piece(King.new(:white), [5,1])
         board.add_piece(King.new(:black), [5,8])
-        board.show_board
         expect(game.draw?).to be true
       end
 

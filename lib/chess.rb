@@ -21,7 +21,7 @@ class Chess
   def game_over?
     if check?(@players.first)
       puts "Check!"
-      if mate?(@players.first)
+      if mate?
         puts "Mate! #{@players.last.color.capitalize} is victorious!"
         true
       end
@@ -178,9 +178,9 @@ class Chess
     oppressors
   end
 
-  def can_evade?(player)
-    kings_square = find_the_king(player)[1]
-    king = find_the_king(player)[0]
+  def can_evade?
+    kings_square = find_the_king(@players.first)[1]
+    king = find_the_king(@players.first)[0]
 
     moves = king.possible_moves(kings_square)
     moves.select! do |move|
@@ -188,7 +188,7 @@ class Chess
     end
 
     enemy_pieces = @board.squares.select do |square, piece|
-      !piece.nil? && piece.color != player.color
+      !piece.nil? && piece.color != king.color
     end
 
     # so king cannot hide behind himself
@@ -209,7 +209,8 @@ class Chess
     moves.any?
   end
 
-  def can_block?(player, oppressor)
+  def can_block?(oppressor)
+    player = @players.first
     attack_line = oppressor.values[0].calculate_path(oppressor.keys.flatten, find_the_king(player)[1])
     attack_line << oppressor.keys[0]
 
@@ -224,11 +225,11 @@ class Chess
           attacking_piece = @board.squares[square_1] unless @board.squares[square_1].nil?
           board.remove_piece(square)
           board.add_piece(piece, square_1)
-          saved = check?(player)
+          saved = !check?(player)
           board.remove_piece(square_1)
           board.add_piece(piece, square)
           board.add_piece(attacking_piece, square_1) if attacking_piece
-          return true unless saved
+          return true if saved
         end
       end
     end
@@ -236,13 +237,14 @@ class Chess
     false
   end
 
-  def mate?(player)
+  def mate?
+    player = @players.first
     oppressors = oppressors(player, find_the_king(player)[1])
     return false if oppressors.empty?
     if oppressors.size > 1
-      !can_evade?(player)
+      !can_evade?
     else
-      !(can_evade?(player) || can_block?(player, oppressors))
+      !(can_evade? || can_block?(oppressors))
     end
   end
 
