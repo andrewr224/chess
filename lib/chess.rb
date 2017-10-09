@@ -150,7 +150,7 @@ class Chess
     path = piece.calculate_path(squares[0], squares[1])
     path.pop if path.length > 2
     path.each do |square|
-      unless oppressors(square).empty?
+      unless oppressors(square).none?
         print "Illegal move. Try again: "
         return false
       end
@@ -161,10 +161,10 @@ class Chess
   end
 
   def check?
-    oppressors(find_the_king[1]).any?
+    oppressors.any?
   end
 
-  def oppressors(target)
+  def oppressors(target=find_the_king[1])
     select_pieces(true).select do |square, piece|
       if piece.instance_of?(Pawn)
         piece.calculate_path(square, target, true)
@@ -203,7 +203,8 @@ class Chess
     moves.any?
   end
 
-  def can_block?(oppressor)
+  def can_block?
+    oppressor = oppressors
     player = @players.first
     attack_line = oppressor.values[0].calculate_path(oppressor.keys.flatten, find_the_king[1])
     attack_line << oppressor.keys[0]
@@ -230,10 +231,10 @@ class Chess
   end
 
   def mate?
-    if oppressors(find_the_king[1]).size > 1
+    if oppressors.size > 1
       !can_evade?
     else
-      !(can_evade? || can_block?(oppressors(find_the_king[1])))
+      !(can_evade? || can_block?)
     end
   end
 
@@ -267,11 +268,6 @@ class Chess
   end
 
   def draw?
-    #Just the two Kings on the board.
-    #King and Bishop against a King
-    #King and Knight against a King
-    #King and two Knights against a King
-
     pieces = select_pieces.values.map { |piece| piece.class }
     if pieces.length == 1
       opponent_pieces = select_pieces(true).values.map { |piece| piece.class }
