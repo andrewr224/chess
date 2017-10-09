@@ -178,8 +178,7 @@ class Chess
     kings_square = find_the_king[1]
     king = find_the_king[0]
 
-    moves = king.possible_moves(kings_square)
-    moves.select! do |move|
+    moves = king.possible_moves(kings_square).select do |move|
       (@board.squares[move].nil? || @board.squares[move].color != king.color)
     end
 
@@ -205,28 +204,28 @@ class Chess
 
   def can_block?
     oppressor = oppressors
-    player = @players.first
-    attack_line = oppressor.values[0].calculate_path(oppressor.keys.flatten, find_the_king[1])
+    attack_line = oppressor.values[0].calculate_path(oppressor.keys[0], find_the_king[1])
     attack_line << oppressor.keys[0]
 
     pieces = select_pieces.select { |square, piece| !piece.instance_of?(King) }
 
-    attack_line.each do |square_1|
+    attack_line.each do |target_square|
       pieces.each do |square, piece|
         # checking if it will be a check when the piece is moved
-        if @board.validate_path(square, square_1)
-          attacking_piece = @board.squares[square_1] unless @board.squares[square_1].nil?
+        if @board.validate_path(square, target_square)
+          enemy_piece = @board.squares[target_square] if @board.squares[target_square]
           board.remove_piece(square)
-          board.add_piece(piece, square_1)
+          board.add_piece(piece, target_square)
+
           saved = !check?
-          board.remove_piece(square_1)
+
+          board.remove_piece(target_square)
           board.add_piece(piece, square)
-          board.add_piece(attacking_piece, square_1) if attacking_piece
+          board.add_piece(enemy_piece, target_square) if enemy_piece
           return true if saved
         end
       end
     end
-
     false
   end
 
