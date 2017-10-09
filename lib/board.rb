@@ -5,7 +5,12 @@ class Board
   attr_accessor :passing_pawn
 
   def initialize
-    @squares = $layout.dup
+    @squares = Hash.new
+    8.downto(1).each do |col|
+      (1..8).each do |row|
+        @squares[[row, col]] = nil
+      end
+    end
     @passing_pawn = nil
   end
 
