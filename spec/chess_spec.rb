@@ -404,8 +404,9 @@ RSpec.describe "Chess" do
         game.players.reverse!
         game.make_a_move
         game.players.reverse!
-        expect(game.stalemate?(white)).to be true
-        expect(game.stalemate?(game.players.last)).to be false
+        expect(game.stalemate?).to be true
+        game.players.reverse!
+        expect(game.stalemate?).to be false
       end
     end
 
@@ -422,7 +423,6 @@ RSpec.describe "Chess" do
         board.add_piece(Knight.new(:black), [3,8])
         board.add_piece(Knight.new(:black), [3,7])
         board.add_piece(King.new(:black), [5,8])
-        board.show_board
         expect(game.draw?).to be true
       end
 
@@ -430,7 +430,6 @@ RSpec.describe "Chess" do
         board.add_piece(King.new(:white), [5,1])
         board.add_piece(Queen.new(:black), [3,4])
         board.add_piece(King.new(:black), [5,8])
-        board.show_board
         expect(game.draw?).to be false
       end
     end

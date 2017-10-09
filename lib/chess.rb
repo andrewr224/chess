@@ -25,7 +25,7 @@ class Chess
         puts "Mate! #{@players.last.color.capitalize} is victorious!"
         true
       end
-    elsif stalemate?(@players.first) || draw?
+    elsif stalemate? || draw?
       puts "It's a draw! (Stalemate)."
       true
     end
@@ -252,9 +252,9 @@ class Chess
     [king.values[0], king.keys.flatten]
   end
 
-  def stalemate?(player)
+  def stalemate?
     pieces = @board.squares.select do |square, piece|
-      !piece.nil? && piece.color == player.color
+      !piece.nil? && piece.color == @players.first.color
     end
 
     pieces.none? do |location, piece|
@@ -267,7 +267,7 @@ class Chess
           @board.remove_piece(location)
           potential_capture = content
           @board.add_piece(piece, square)
-          legal = !check?(player)
+          legal = !check?(@players.first)
           @board.remove_piece(square)
           @board.add_piece(piece, location)
           @board.add_piece(potential_capture, square)
