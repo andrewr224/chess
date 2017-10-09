@@ -12,7 +12,12 @@ class Chess
 
   def play
     place_pieces
-    puts "Welcome to chess game. Please use explicit 'e2 e4' syntax to move pieces."
+    puts "Welcome to chess game!"
+    puts "Please use explicit syntax (e.g. 'e2 e4') to move pieces."
+    puts "You can save, load, or exit your game at any time by entering"
+    puts "'save', 'load', or 'exit'."
+    puts "You can propose a draw by entering 'draw'."
+    puts "Good luck!"
     take_turn until game_over?
     @board.show_board
     exit
@@ -43,6 +48,9 @@ class Chess
 
     until moved
       squares = @players.first.select_squares
+      if squares[0].is_a? Symbol
+        execute(squares[0])
+      end
       piece = @board.squares[squares[0]]
       target_piece = @board.squares[squares[1]]
 
@@ -60,6 +68,16 @@ class Chess
       else
         moved = move_pieces(squares[0], squares[1])
       end
+    end
+  end
+
+  def execute(command)
+    case command
+    when :exit
+      exit if @players.first.confirm
+    when :load
+    when :save
+    when :draw
     end
   end
 

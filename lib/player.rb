@@ -10,18 +10,34 @@ class Player
     to = nil
 
     until from && to
-      input = gets.chomp
-      squares = input.dup.split unless input.nil?
+      input = gets.chomp.downcase
 
-      if input.empty?
-        print "Invalid input. Try again: "
-      elsif (squares.length != 2) || (squares[0].length != 2) || (squares[1].length != 2)
-        print "Invalid input. Try again: "
-      elsif squares[0] == squares[1]
-        print "Invalid input. Try again: "
+      case input
+      when "exit"
+        from = :exit
+        to = ""
+      when "save"
+        from = :save
+        to = ""
+      when "load"
+        from = :load
+        to = ""
+      when "draw"
+        from = :draw
+        to = ""
       else
-        from = change_to_coordinates(squares[0])
-        to = change_to_coordinates(squares[1])
+        squares = input.dup.split unless input.nil?
+
+        if input.empty?
+          print "Invalid input. Try again: "
+        elsif (squares.length != 2) || (squares[0].length != 2) || (squares[1].length != 2)
+          print "Invalid input. Try again: "
+        elsif squares[0] == squares[1]
+          print "Invalid input. Try again: "
+        else
+          from = change_to_coordinates(squares[0])
+          to = change_to_coordinates(squares[1])
+        end
       end
     end
 
@@ -30,7 +46,7 @@ class Player
 
   def change_to_coordinates(square)
     square = square.split("")
-    col = to_number(square[0].downcase)
+    col = to_number(square[0])
     row = square[1].to_i
 
     return false unless col && ((1..8).include? row)
@@ -77,5 +93,20 @@ class Player
       end
     end
     choice
+  end
+
+  def confirm
+    print "Are you sure? [Y/N] "
+    choice = nil
+    until choice
+      choice = case gets.chomp.downcase[0]
+      when 'y'
+        return true
+      when 'n'
+        return false
+      else
+        print "Please enter 'Y' or 'N': "
+      end
+    end
   end
 end
