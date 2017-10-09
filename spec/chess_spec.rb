@@ -400,12 +400,10 @@ RSpec.describe "Chess" do
         board.add_piece(Pawn.new(:white), [7,7])
         board.add_piece(King.new(:black), [7,8])
         board.add_piece(Queen.new(:black), [5,3])
-        board.show_board
         game.make_a_move
         game.players.reverse!
         game.make_a_move
         game.players.reverse!
-        board.show_board
         expect(game.stalemate?(white)).to be true
         expect(game.stalemate?(game.players.last)).to be false
       end
@@ -413,7 +411,27 @@ RSpec.describe "Chess" do
 
     context 'insufficient material' do
       it 'declares a draw' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(King.new(:black), [5,8])
+        board.show_board
+        expect(game.draw?).to be true
+      end
 
+      it 'declares a draw' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Knight.new(:black), [3,8])
+        board.add_piece(Knight.new(:black), [3,7])
+        board.add_piece(King.new(:black), [5,8])
+        board.show_board
+        expect(game.draw?).to be true
+      end
+
+      it 'does not declare a draw' do
+        board.add_piece(King.new(:white), [5,1])
+        board.add_piece(Queen.new(:black), [3,4])
+        board.add_piece(King.new(:black), [5,8])
+        board.show_board
+        expect(game.draw?).to be false
       end
     end
   end

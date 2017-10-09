@@ -273,6 +273,29 @@ class Chess
     end
   end
 
+  def draw?
+    #Just the two Kings on the board.
+    #King and Bishop against a King
+    #King and Knight against a King
+    #King and two Knights against a King
+
+    pieces = []
+    @board.squares.each { |square, piece| pieces << piece.class if !piece.nil? && piece.color == @players.first.color}
+    if pieces.length == 1
+     opponent_pieces = []
+      @board.squares.each { |square, piece| opponent_pieces << piece.class if !piece.nil? && piece.color != @players.first.color}
+
+      if opponent_pieces.length <= 3
+        if (opponent_pieces - [Knight, King]) == []
+          return true
+        elsif (opponent_pieces - [Bishop, King]) == []
+          return true
+        end
+      end
+    end
+    false
+  end
+
   def place_pieces
     @players.each do |player|
       color = player.color
