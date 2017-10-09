@@ -33,10 +33,8 @@ class Board
     path = []
 
     if piece.instance_of? Pawn
-      if @passing_pawn
-        if to == @passing_pawn[0]
-          path = piece.calculate_path(from, to, true)
-        end
+      if @passing_pawn && (to == @passing_pawn[0])
+        path = piece.calculate_path(from, to, true)
       else
         path = piece.calculate_path(from, to, validate_presence(to))
       end
