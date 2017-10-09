@@ -19,7 +19,7 @@ class Chess
   end
 
   def game_over?
-    if check?(@players.first)
+    if check?
       puts "Check!"
       if mate?
         puts "Mate! #{@players.last.color.capitalize} is victorious!"
@@ -76,7 +76,7 @@ class Chess
     end
 
     # so the king is not exposed
-    if check?(@players.first)
+    if check?
       print "Illegal move: you cannot expose your King. "
       @board.remove_piece(to)
       @board.add_piece(piece, from)
@@ -142,7 +142,7 @@ class Chess
   end
 
   def castle(squares, piece, rook_square)
-    if check?(@players.first)
+    if check?
       print "Illegal move. Try again: "
       return false
     end
@@ -160,8 +160,8 @@ class Chess
     move_pieces(squares[0], squares[1])
   end
 
-  def check?(player)
-    oppressors(player, find_the_king(player)[1]).any?
+  def check?
+    oppressors(@players.first, find_the_king(@players.first)[1]).any?
   end
 
   def oppressors(player, target)
@@ -225,7 +225,7 @@ class Chess
           attacking_piece = @board.squares[square_1] unless @board.squares[square_1].nil?
           board.remove_piece(square)
           board.add_piece(piece, square_1)
-          saved = !check?(player)
+          saved = !check?
           board.remove_piece(square_1)
           board.add_piece(piece, square)
           board.add_piece(attacking_piece, square_1) if attacking_piece
@@ -271,7 +271,7 @@ class Chess
           @board.remove_piece(location)
           potential_capture = content
           @board.add_piece(piece, square)
-          legal = !check?(@players.first)
+          legal = !check?
           @board.remove_piece(square)
           @board.add_piece(piece, location)
           @board.add_piece(potential_capture, square)

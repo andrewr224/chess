@@ -145,7 +145,7 @@ RSpec.describe "Chess" do
       board.add_piece(Rook.new(:black), [2,7])
       board.add_piece(Rook.new(:black), [6,1])
       board.add_piece(Bishop.new(:black), [5,6])
-      expect(game.check?(white)).to be false
+      expect(game.check?).to be false
     end
 
     it 'sais that the king is in check when he is' do
@@ -153,7 +153,7 @@ RSpec.describe "Chess" do
       board.add_piece(Rook.new(:black), [5,7])
       board.add_piece(Rook.new(:black), [6,2])
       board.add_piece(Bishop.new(:black), [3,3])
-      expect(game.check?(white)).to be true
+      expect(game.check?).to be true
     end
 
     it 'does not allow a move if it exposes a check' do
