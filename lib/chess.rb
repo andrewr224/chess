@@ -187,14 +187,12 @@ class Chess
       (@board.squares[move].nil? || @board.squares[move].color != king.color)
     end
 
-    enemy_pieces = @board.squares.select do |square, piece|
-      !piece.nil? && piece.color != king.color
-    end
+    opponent_pieces = select_pieces(true)
 
     # so king cannot hide behind himself
     @board.remove_piece(kings_square)
     moves.select! do |move|
-      enemy_pieces.none? do |square, piece|
+      opponent_pieces.none? do |square, piece|
         if square == move
           false
         elsif piece.instance_of?(Pawn)
@@ -214,9 +212,7 @@ class Chess
     attack_line = oppressor.values[0].calculate_path(oppressor.keys.flatten, find_the_king[1])
     attack_line << oppressor.keys[0]
 
-    pieces = @board.squares.select do |square, piece|
-      !piece.nil? && !piece.instance_of?(King) && piece.color == player.color
-    end
+    pieces = select_pieces.select { |square, piece| !piece.instance_of?(King) }
 
     attack_line.each do |square_1|
       pieces.each do |square, piece|
@@ -254,11 +250,7 @@ class Chess
   end
 
   def stalemate?
-    pieces = @board.squares.select do |square, piece|
-      !piece.nil? && piece.color == @players.first.color
-    end
-
-    pieces.none? do |location, piece|
+    select_pieces.none? do |location, piece|
       @board.squares.any? do |square, content|
         if square == location
           false
@@ -284,12 +276,9 @@ class Chess
     #King and Knight against a King
     #King and two Knights against a King
 
-    pieces = []
-    @board.squares.each { |square, piece| pieces << piece.class if !piece.nil? && piece.color == @players.first.color}
+    pieces = select_pieces.values.map { |piece| piece.class }
     if pieces.length == 1
-      opponent_pieces = []
-      @board.squares.each { |square, piece| opponent_pieces << piece.class if !piece.nil? && piece.color != @players.first.color}
-
+      opponent_pieces = select_pieces(true).values.map { |piece| piece.class }
       if (opponent_pieces.length <= 3) && (opponent_pieces - [Knight, King] == [])
         return true
       elsif (opponent_pieces.length <= 2) && (opponent_pieces - [Bishop, King] == [])
@@ -297,6 +286,13 @@ class Chess
       end
     end
     false
+  end
+
+  def select_pieces(opponent=false)
+    color = opponent ? @players.last.color : @players.first.color
+    @board.squares.select do |square, piece|
+      piece && piece.color == color
+    end
   end
 
   def place_pieces
