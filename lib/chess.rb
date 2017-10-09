@@ -15,6 +15,7 @@ class Chess
     puts "Welcome to chess game. Please use explicit 'e2 e4' syntax to move pieces."
     take_turn until game_over?
     @board.show_board
+    exit
   end
 
   def game_over?
@@ -22,8 +23,9 @@ class Chess
       puts "Check!"
       if mate?(@players.first)
         puts "Mate! #{@players.last.color.capitalize} is victorious!"
+        true
       end
-    elsif stalemate?(@players.first)
+    elsif stalemate?(@players.first) || draw?
       puts "It's a draw! (Stalemate)."
       true
     end
@@ -48,17 +50,13 @@ class Chess
         print "Select your piece to move: "
       elsif !@board.validate_path(squares[0], squares[1])
         print "Illegal move. Try again: "
+      # check if it's an attack
+      elsif target_piece && target_piece.color == piece.color
+        print "Square is occupied by your own piece. "
       elsif piece.instance_of?(King)
         moved = kings_move(squares, piece)
-      # check if it's an attack
-      elsif target_piece
-        if target_piece.color == piece.color
-          print "Square is occupied by your own piece. "
-        elsif piece.instance_of?(Pawn) && (squares[0][0] == squares[1][0])
-          print "Illegal move. Try again: "
-        else
-          moved = move_pieces(squares[0], squares[1])
-        end
+      elsif piece.instance_of?(Pawn) && (squares[0][0] == squares[1][0]) && target_piece
+        print "Illegal move. Try again: "
       else
         moved = move_pieces(squares[0], squares[1])
       end
@@ -221,11 +219,13 @@ class Chess
       pieces.each do |square, piece|
         # checking if it will be a check when the piece is moved
         if @board.validate_path(square, square_1)
+          attacking_piece = @board.squares[square_1] unless @board.squares[square_1].nil?
           board.remove_piece(square)
           board.add_piece(piece, square_1)
           saved = check?(player)
           board.remove_piece(square_1)
           board.add_piece(piece, square)
+          board.add_piece(attacking_piece, square_1) if attacking_piece
           return true unless saved
         end
       end
@@ -261,12 +261,16 @@ class Chess
       @board.squares.any? do |square, content|
         if square == location
           false
+        elsif content && (piece.color == content.color)
+          false
         elsif @board.validate_path(location, square)
           @board.remove_piece(location)
+          potential_capture = content
           @board.add_piece(piece, square)
           legal = !check?(player)
           @board.remove_piece(square)
           @board.add_piece(piece, location)
+          @board.add_piece(potential_capture, square)
           true if legal
         end
       end
@@ -282,7 +286,7 @@ class Chess
     pieces = []
     @board.squares.each { |square, piece| pieces << piece.class if !piece.nil? && piece.color == @players.first.color}
     if pieces.length == 1
-     opponent_pieces = []
+      opponent_pieces = []
       @board.squares.each { |square, piece| opponent_pieces << piece.class if !piece.nil? && piece.color != @players.first.color}
 
       if opponent_pieces.length <= 3
