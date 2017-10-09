@@ -150,7 +150,7 @@ class Chess
     path = piece.calculate_path(squares[0], squares[1])
     path.pop if path.length > 2
     path.each do |square|
-      unless oppressors(@players.first, square).empty?
+      unless oppressors(square).empty?
         print "Illegal move. Try again: "
         return false
       end
@@ -161,12 +161,12 @@ class Chess
   end
 
   def check?
-    oppressors(@players.first, find_the_king(@players.first)[1]).any?
+    oppressors(find_the_king[1]).any?
   end
 
-  def oppressors(player, target)
+  def oppressors(target)
     oppressors = @board.squares.select do |square, piece|
-      if !piece.nil? && piece.color != player.color
+      if !piece.nil? && piece.color == @players.last.color
         if piece.instance_of?(Pawn)
           piece.calculate_path(square, target, true)
         else
@@ -179,8 +179,8 @@ class Chess
   end
 
   def can_evade?
-    kings_square = find_the_king(@players.first)[1]
-    king = find_the_king(@players.first)[0]
+    kings_square = find_the_king[1]
+    king = find_the_king[0]
 
     moves = king.possible_moves(kings_square)
     moves.select! do |move|
@@ -211,7 +211,7 @@ class Chess
 
   def can_block?(oppressor)
     player = @players.first
-    attack_line = oppressor.values[0].calculate_path(oppressor.keys.flatten, find_the_king(player)[1])
+    attack_line = oppressor.values[0].calculate_path(oppressor.keys.flatten, find_the_king[1])
     attack_line << oppressor.keys[0]
 
     pieces = @board.squares.select do |square, piece|
@@ -239,7 +239,7 @@ class Chess
 
   def mate?
     player = @players.first
-    oppressors = oppressors(player, find_the_king(player)[1])
+    oppressors = oppressors(find_the_king[1])
     return false if oppressors.empty?
     if oppressors.size > 1
       !can_evade?
@@ -248,9 +248,9 @@ class Chess
     end
   end
 
-  def find_the_king(player)
+  def find_the_king
     king = @board.squares.select do |square, piece|
-      !piece.nil? && piece.instance_of?(King) && piece.color == player.color
+      !piece.nil? && piece.instance_of?(King) && piece.color == @players.first.color
     end
 
     [king.values[0], king.keys.flatten]
