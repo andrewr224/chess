@@ -26,7 +26,7 @@ class Chess
         true
       end
     elsif stalemate? || draw?
-      puts "It's a draw! (Stalemate)."
+      puts "It's a draw!"
       true
     end
   end
@@ -77,7 +77,8 @@ class Chess
 
     # so the king is not exposed
     if check?(@players.first)
-      print "Illegal move: you cannot expose your King."
+      print "Illegal move: you cannot expose your King. "
+      @board.remove_piece(to)
       @board.add_piece(piece, from)
       if pawn
         @board.add_piece(target_piece, pawn)
@@ -95,14 +96,14 @@ class Chess
     if piece.instance_of?(Pawn) && (to[1] == 8 || to[1] == 1)
       puts "#{@players.first.color.capitalize}'s Pawn has reached the last rank and is to be promoted."
       puts "Please select a piece you want it to be promoted to:"
-      puts "(use 'q', 'r', 'b', and 'k' for Queen, Rook, Bishop, and Knight)"
+      puts "(use 'q', 'r', 'b', and 'k' for Queen, Rook, Bishop, or Knight)"
       @board.remove_piece(to)
       @board.add_piece(@players.first.select_piece.new(@players.first.color), to)
     end
 
     # en passant
     @board.passing_pawn = nil if @board.passing_pawn
-    if piece.instance_of?(Pawn) && (from[1] == 2 || from[1] == 7) && (to[1] == 4 || to[1] == 5)
+    if piece.instance_of?(Pawn) && !piece.moved && (to[1] == 4 || to[1] == 5)
       @board.passing_pawn = [[from[0], (from[1] + to[1]) / 2], to]
     end
 
@@ -141,21 +142,22 @@ class Chess
   end
 
   def castle(squares, piece, rook_square)
+    if check?(@players.first)
+      print "Illegal move. Try again: "
+      return false
+    end
+
     path = piece.calculate_path(squares[0], squares[1])
     path.pop if path.length > 2
-    oppressing_pieces = []
-
     path.each do |square|
-      oppressor = oppressors(@players.first, square)
-      oppressing_pieces << oppressor unless oppressor.empty?
+      unless oppressors(@players.first, square).empty?
+        print "Illegal move. Try again: "
+        return false
+      end
     end
 
-    if oppressing_pieces.none? && !check?(@players.first)
-      move_pieces(rook_square, [(squares[0][0] + squares[1][0]) / 2, squares[0][1]])
-      move_pieces(squares[0], squares[1])
-    else
-      print "Illegal move. Try again: "
-    end
+    move_pieces(rook_square, [(squares[0][0] + squares[1][0]) / 2, squares[0][1]])
+    move_pieces(squares[0], squares[1])
   end
 
   def check?(player)
