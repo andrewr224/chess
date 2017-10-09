@@ -238,13 +238,10 @@ class Chess
   end
 
   def mate?
-    player = @players.first
-    oppressors = oppressors(find_the_king[1])
-    return false if oppressors.empty?
-    if oppressors.size > 1
+    if oppressors(find_the_king[1]).size > 1
       !can_evade?
     else
-      !(can_evade? || can_block?(oppressors))
+      !(can_evade? || can_block?(oppressors(find_the_king[1])))
     end
   end
 
