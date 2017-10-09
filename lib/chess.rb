@@ -289,12 +289,10 @@ class Chess
       opponent_pieces = []
       @board.squares.each { |square, piece| opponent_pieces << piece.class if !piece.nil? && piece.color != @players.first.color}
 
-      if opponent_pieces.length <= 3
-        if (opponent_pieces - [Knight, King]) == []
-          return true
-        elsif (opponent_pieces - [Bishop, King]) == []
-          return true
-        end
+      if (opponent_pieces.length <= 3) && (opponent_pieces - [Knight, King] == [])
+        return true
+      elsif (opponent_pieces.length <= 2) && (opponent_pieces - [Bishop, King] == [])
+        return true
       end
     end
     false
