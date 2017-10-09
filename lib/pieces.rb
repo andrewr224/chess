@@ -140,8 +140,8 @@ class Pawn < Piece
   end
 
   def calculate_path(from, to, attack)
-    return false if @color == :white && (to[1]) - from[1] != 1 unless (from[1] == 2) && (to[1] - from[1]) == 2
-    return false if @color == :black && (from[1] - to[1]) != 1 unless (from[1] == 7) && (from[1] - to[1]) == 2
+    return false if @color == :white && (to[1]) - from[1] != 1 unless !moved && (to[1] - from[1]) == 2
+    return false if @color == :black && (from[1] - to[1]) != 1 unless !moved && (from[1] - to[1]) == 2
     return [] if attack && ((from[0] - to[0]).abs == 1) && ((from[1] - to[1]).abs == 1)
     return false if (from[0] != to[0])
 
