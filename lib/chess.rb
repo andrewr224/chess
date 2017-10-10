@@ -101,12 +101,16 @@ class Chess
   end
 
   def load
-    config = YAML::load(File.read("./save.yaml"))
-    @board = config.board
-    @players = config.players
-    @board.show_board
-    puts "Loading complete."
-    print "\n#{@players.first.color.capitalize}'s turn: "
+    if File.exist?("./save.yaml")
+      config = YAML::load(File.read("./save.yaml"))
+      @board = config.board
+      @players = config.players
+      @board.show_board
+      puts "Loading complete."
+      print "\n#{@players.first.color.capitalize}'s turn: "
+    else
+      puts "Nothing to load."
+    end
   end
 
   def move_pieces(from, to)
@@ -357,3 +361,5 @@ class Chess
 
   end
 end
+
+Chess.new.play
