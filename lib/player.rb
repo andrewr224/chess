@@ -37,6 +37,7 @@ class Player
         else
           from = change_to_coordinates(squares[0])
           to = change_to_coordinates(squares[1])
+          print "Invalid input. Try again: " unless from && to
         end
       end
     end
@@ -95,8 +96,8 @@ class Player
     choice
   end
 
-  def confirm
-    print "Are you sure? [Y/N] "
+  def confirm(thing)
+    print "Are you sure you want to #{thing}\n[Y/N] "
     choice = nil
     until choice
       choice = case gets.chomp.downcase[0]

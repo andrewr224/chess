@@ -1,6 +1,7 @@
 require_relative 'board'
 require_relative 'player'
 require_relative 'pieces'
+require 'yaml'
 
 class Chess
   attr_reader :board, :players, :white_king
@@ -74,11 +75,38 @@ class Chess
   def execute(command)
     case command
     when :exit
-      exit if @players.first.confirm
+      if @players.last.confirm("exit the game? All unsaved progress will be lost.")
+        puts "Exiting the game..."
+        exit
+      end
     when :load
+      load if @players.last.confirm("load the game? Current game will be lost.")
     when :save
+      save if @players.last.confirm("save the game? This will replace any previous save.")
     when :draw
+      if @players.last.confirm("agree to a draw?")
+        puts "The draw was agreed upon."
+        puts "Exiting the game now..."
+        exit
+      end
     end
+  end
+
+  def save
+    File.open("./save.yaml", "w") do |file|
+      file.puts YAML::dump(self)
+    end
+    puts "Saving complete."
+    print "\n#{@players.first.color.capitalize}'s turn: "
+  end
+
+  def load
+    config = YAML::load(File.read("./save.yaml"))
+    @board = config.board
+    @players = config.players
+    @board.show_board
+    puts "Loading complete."
+    print "\n#{@players.first.color.capitalize}'s turn: "
   end
 
   def move_pieces(from, to)
@@ -329,5 +357,3 @@ class Chess
 
   end
 end
-
-#Chess.new.play
